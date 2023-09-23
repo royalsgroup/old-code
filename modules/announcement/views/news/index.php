@@ -89,7 +89,7 @@
                                                     <a href="<?php echo site_url('announcement/news/edit/'.$obj->id); ?>" class="btn btn-info btn-xs"><i class="fa fa-pencil-square-o"></i> <?php echo $this->lang->line('edit'); ?> </a>
                                                 <?php } ?>
                                                 <?php if(has_permission(VIEW, 'announcement', 'news')){ ?>
-                                                    <a  onclick="get_news_modal(<?php echo $obj->id; ?>);"  data-toggle="modal" id="view_<?php echo $obj->id ?>" data-target=".bs-news-modal-lg"  class="btn btn-success btn-xs"><i class="fa fa-eye"></i> <?php echo $this->lang->line('view'); ?> </a>
+                                                    <a  onclick="get_news_modal(<?php echo $obj->id; ?>);"  data-toggle="modal" data-target=".bs-news-modal-lg"  class="btn btn-success btn-xs"><i class="fa fa-eye"></i> <?php echo $this->lang->line('view'); ?> </a>
                                                 <?php } ?>
                                                 <?php if(has_permission(DELETE, 'announcement', 'news')){ ?>
                                                     <a href="<?php echo site_url('announcement/news/delete/'.$obj->id); ?>" onclick="javascript: return confirm('<?php echo $this->lang->line('confirm_alert'); ?>');" class="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i> <?php echo $this->lang->line('delete'); ?> </a>
@@ -282,15 +282,6 @@
        });
     }
 </script>
-<?php 
-
-if ($news_id) { ?>
-    <script>
-        $(document).ready(function(){
-            $('#view_'+<?php echo $news_id ?>).click()
-        })
-    </script>
-<?php } ?>
 
  <link href="<?php echo VENDOR_URL; ?>editor/jquery-te-1.4.0.css" rel="stylesheet">
  <script type="text/javascript" src="<?php echo VENDOR_URL; ?>editor/jquery-te-1.4.0.min.js"></script>

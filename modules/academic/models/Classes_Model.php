@@ -18,7 +18,8 @@ class Classes_Model extends MY_Model {
         $this->db->from('classes AS C');
         $this->db->join('teachers AS T', 'T.id = C.teacher_id', 'left');
         $this->db->join('schools AS S', 'S.id = C.school_id', 'left');
-		$this->db->join('academic_disciplines AS D', 'C.disciplines = D.id', 'left');
+		$this->db->join('academic_disciplines AS D', 'D.id=C.disciplines', 'left');
+		$this->db->join('academic_years AS AY', 'AY.id = S.academic_year_id', 'left');
         if ($this->session->userdata('default_data') ==1)
 		{
 			$this->db->or_where('C.school_id','0'); 
@@ -51,7 +52,7 @@ class Classes_Model extends MY_Model {
 			$this->db->where('S.district_id', $this->session->userdata('district_id'));
 		}
 		$this->db->order_by('numeric_name', 'ASC');
-		$this->db->order_by('name', 'ASC');
+		$this->db->order_by('C.id', 'DESC');
 
         $result = $this->db->get();
 		// echo $this->db->last_query();

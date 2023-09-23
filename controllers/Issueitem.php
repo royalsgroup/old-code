@@ -17,9 +17,7 @@ class Issueitem extends MY_Controller
     }
 
      public function index($school_id = null) {
-        $voucher_id = $this->input->post('voucher_id');								               
-        $this->data['voucher_id'] = $voucher_id;    
-
+       
         //check_permission(VIEW);
 		if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdata('dadmin') != 1){
             $school_id=$this->session->userdata('school_id');              
@@ -27,16 +25,12 @@ class Issueitem extends MY_Controller
 			$condition['is_active']='yes';
 			$this->data['itemcategories'] = $this->itemissue->get_list('item_category', $condition, '','', '', 'id', 'ASC');			
         }   
-        $this->data['school_id'] = $school_id;    
-        $this->data['vouchers']  = array();
+        
 		//$this->data['issue_by']=$this->session->userdata('username'); 
 		//$this->data['issue_by_id']=$this->session->userdata('id'); 
+		$this->data['itemissue'] = $this->itemissue->get(null,$school_id);	
         $financial_year=$this->transactions->get_single('financial_years',array('school_id'=>$school_id,'is_running'=>1));	
         $check_financial_year=$this->transactions->get_single('financial_years',array('school_id'=>$school_id,'previous_financial_year_id'=> $financial_year->id));	
-         if ($school_id)
-         {
-            $this->data['vouchers']  = $this->itemissue->get_list('vouchers', array('school_id'=>$school_id), '','', '', 'id', 'ASC');          
-         }
 
 		if(strpos($financial_year->session_year,"->"))	
         {
@@ -59,12 +53,6 @@ class Issueitem extends MY_Controller
                 $f_end=date("Y-m-d",strtotime("31 ".$arr[1]));	
             }
         }
-      
-        $financial_start_date =   date("Y-m-d", strtotime("+1 day", strtotime($f_start)));
-		$financial_end_date = $f_end;
-
-        $this->data['itemissue'] = $this->itemissue->get(null,$school_id, null, $voucher_id, $financial_start_date, $financial_end_date );	
-
 		$f_start=date('d/m/Y',strtotime($f_start));
         if ($check_financial_year)
         {
@@ -75,8 +63,6 @@ class Issueitem extends MY_Controller
 		$this->data['f_end'] = $f_end;    
         // echo $this->db->last_query();
         // die();	
-        $this->data['list_items'] = 1;	
-
 		  $this->data['filter_school_id'] = $school_id;        
 		$this->data['schools'] = $this->schools;	
         //$this->data['itemstores'] = $this->itemstore->get_list('item_store', array(), '','', '', 'id', 'ASC');
@@ -86,6 +72,9 @@ class Issueitem extends MY_Controller
 		//$this->data['itemstores'] = $this->itemstock->get_list('item_store', array(), '','', '', 'id', 'ASC');
         $this->data['list'] = TRUE;
         $this->layout->title($this->lang->line('manage_item')." ".$this->lang->line('issue') . ' | ' . SMS);
+
+        $this->data['todayDate'] = date("d-m-Y");
+        
         $this->layout->view('issueitem/index', $this->data);            
        
     }
@@ -105,8 +94,8 @@ class Issueitem extends MY_Controller
                 $data = $this->_get_posted_itemissue_data();
 		
                 $invoice_insert_id = $this->itemissue->insert('item_invoices', $invoice_data);
-            //     echo $this->db->last_query();
-            //    echo '<pre>'; var_dump( $invoice_insert_id); die(); 
+              
+               
                 if($invoice_insert_id)
                 {
                     $voucher_id=$school->default_voucher_Id_for_inventory;
@@ -124,12 +113,12 @@ class Issueitem extends MY_Controller
                                 $transaction['date']=date("Y-m-d H:i:s", strtotime($data['issue_date']));						
                                 $transaction['created']=date('Y-m-d H:i:s');	
                                 $transaction['created_by']=$this->session->userdata('id');		   
-                                $transaction['narration']="Sell Items - ".$data['note'];	
+                                $transaction['narration']="Sell Items - ".$invoice_data['description'];	
                                 
                                 $transaction['financial_year_id']=$school->financial_year_id;
                                 $transaction['inventory_id']=$invoice_insert_id;
 
-                                // $transaction['narration']= "Sell Items - ".$invoice_data['description'];		   
+                                //  $transaction['narration']=$data['note'];
                                 
                                 if(isset($transaction['voucher_id'])){													
                                     $transaction_id = $this->transactions->insert('account_transactions', $transaction);
@@ -224,20 +213,15 @@ class Issueitem extends MY_Controller
 					redirect('itemstock/add');
 				}
 		}
-        if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdata('dadmin') != 1){
-            $school_id=$this->session->userdata('school_id');              
-            $condition['school_id'] = $school_id;                    
-			$condition['is_active']='yes';
-			$this->data['itemcategories'] = $this->itemissue->get_list('item_category', $condition, '','', '', 'id', 'ASC');			
-        }   
+
 		$this->data['itemissues'] = $this->itemissue->get();
-        $this->data['filter_school_id'] = $school_id;     
+		
 	
         //$this->data['itemstores'] = $this->item->get_list('item_store', array(), '','', '', 'id', 'ASC');
         $this->data['themes'] = $this->itemissue->get_list('themes', array(), '','', '', 'id', 'ASC');
         $this->data['add'] = TRUE;
         $this->layout->title($this->lang->line('add'). ' ' . $this->lang->line('item')." ".$this->lang->line('issue'). ' | ' . SMS);
-        $this->layout->view('issueitem/index', $this->data);            
+        $this->layout->view('itemissue/index', $this->data);
     }
 
     
@@ -328,9 +312,6 @@ class Issueitem extends MY_Controller
 		$items[] = 'note'; 			
         $data = elements($items, $_POST);	
 		$data['issue_by']=$this->session->userdata('id');		
-        $school = $this->itemissue->get_school_by_id($data['school_id']);
-
-		$data['financial_year_id'] = @$school->financial_year_id;
 
 		if(isset($_POST['issue_date']) && $_POST['issue_date']!=''){
             $_POST['issue_date'] = str_replace('/', '-', $_POST['issue_date']);
@@ -364,16 +345,12 @@ class Issueitem extends MY_Controller
 		$items[] = 'grand_total';			
         $items[] = 'discount';		
 		$items[] = 'charges';				
-        $items[] = 'description';
-
+       
         $data = elements($items, $_POST);	
         if( $data['discount'])
         {
             $data['discount']  =  $data['total'] * ( $data['discount']/100);
         }
-        else  $data['discount'] =0;
-        if(!$data['charges'])
-            $data['charges'] =0;
         $data['invoice_type']="issue_item";	
         $data['invoice_no'] = $this->itemissue->generate_invoice_no($data['school_id']); 
 		$data['created_by']=$this->session->userdata('id');		   

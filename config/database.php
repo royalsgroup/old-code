@@ -96,13 +96,8 @@ $db['default'] = array(
 	'save_queries' => TRUE
 );
 
-
 // database connection here
-// $db['default']['hostname'] = "localhost:3306";
-// $db['default']['username'] = "admin_rajvbr";
-// $db['default']['password'] = "w3j1c8R4%";
-// $db['default']['database'] = "vbr_impold";
-$db['default']['hostname'] = "132.148.76.117:3306";
-$db['default']['username'] = "admin_ievb";
-$db['default']['password'] = "@897a6qgW";
-$db['default']['database'] = "vbr_hin";
+$db['default']['hostname'] = "208.109.37.237:3306";
+$db['default']['username'] = "vb_admindb";
+$db['default']['password'] = "*F76u9k4k";
+$db['default']['database'] = "school2";

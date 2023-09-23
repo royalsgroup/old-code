@@ -9,8 +9,8 @@ class Item_model extends MY_Model {
         parent::__construct();
        // $this->current_session = $this->setting_model->getCurrentSession();
     }
-public function get_item_list($school_id = null, $category_id =null, $group_id = null, $start_date = null , $end_date = null) {
-		 $this->db->select('I.*, S.school_name,IC.item_category,(select name from item_groups where id=IC.group_id) as group_name ');
+public function get_list($school_id = null) {
+		 $this->db->select('I.*, S.school_name,IC.item_category');
         $this->db->from('item AS I');       		
         $this->db->join('schools AS S', 'S.id = I.school_id', 'left');
 		$this->db->join('item_category AS IC', 'IC.id = I.item_category_id', 'left');
@@ -27,22 +27,8 @@ public function get_item_list($school_id = null, $category_id =null, $group_id =
 		else if($this->session->userdata('dadmin') == 1 && $school_id==null){
 			$this->db->where_in('S.id', $this->session->userdata('dadmin_school_ids'));
 		}
-        if($group_id){
-            $this->db->where('IC.group_id', $group_id);
-        }
-        if($category_id){
-            $this->db->where('I.item_category_id', $category_id);
-        }
-        if($start_date && $end_date)
-        {
-            $this->db->where("DATE(I.created_at) BETWEEN '$start_date' AND '$end_date'");
-        }
 		$this->db->order_by('I.name','asc');
-        $result=$this->db->get();
-        //         echo $this->db->last_query();
-
-        // var_dump( $this->db->error());
-        $result=$result->result();
+        $result=$this->db->get()->result();		
 		$i=0;
 		$output=array();		
 		foreach($result as $r){			
@@ -57,18 +43,6 @@ public function get_item_list($school_id = null, $category_id =null, $group_id =
 		
 		return $output;
 	}
-
-    public function get_itemgroup_list($school_id = null){        
-        $this->db->select('IG.*, S.school_name');
-        $this->db->from('item_groups AS IG');       
-        $this->db->join('schools AS S', 'S.id = IG.school_id', 'left');
-        if($school_id != null){
-            $this->db->where('IG.school_id', $school_id);
-        }
-
-        return $this->db->get()->result();
-        
-    }
     public function get_default_groups($school_id){
         $this->db->select("I.*
         ,(select id from item_groups IG2 where IG2.name=I.name and IG2.description=I.description and school_id=$school_id and imported=1)  as existing_id

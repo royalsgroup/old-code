@@ -443,8 +443,10 @@ exit;
         $items[] = 'title';
         $items[] = 'description';
         
-        $data = elements($items, $_POST);        
-        
+        $data = elements($items, $_POST);    
+        $school_id = $this->session->userdata('school_id');
+        $schhoolData = $this->material->get_school($school_id);          
+        $data['academic_year_id'] = $schhoolData->academic_year_id;
         if ($this->input->post('id')) {
             $data['modified_at'] = date('Y-m-d H:i:s');
             $data['modified_by'] = logged_in_user_id();

@@ -36,7 +36,7 @@ class Transactions extends MY_Controller
     }*/
   
   
-	function create($voucher_id = "")
+	function create($voucher_id = "",$recipt='')
 	{
 		if ($_POST) {
 			//print_r($_POST); exit;
@@ -178,7 +178,7 @@ class Transactions extends MY_Controller
 
 		$financial_year=$this->transactions->get_single('financial_years',array('school_id'=>$voucher->school_id,'is_running'=>1));	
 		$previous_financial_year=$this->transactions->get_single('financial_years',array('previous_financial_year_id'=>$financial_year->id,'school_id'=>$voucher->school_id));	
-
+		
 		if(strpos($financial_year->session_year,"->"))	
         {
             $arr=explode("->",$financial_year->session_year);
@@ -225,6 +225,13 @@ class Transactions extends MY_Controller
 		{
 			// $this->data['iOnlyAllowCurrentDate'] =1;
 			$this->data['allow_till_current_date'] =1;
+
+		}
+
+		$this->data['previous_financial_year_activate'] = 0;
+		if(date('Y',strtotime($f_start))< date('Y'))
+		{
+			$this->data['previous_financial_year_activate'] = 1;
 
 		}
 		
@@ -393,9 +400,11 @@ class Transactions extends MY_Controller
 			
 		 
 		//  debug_a($ledgers);
+		$this->data['todayDate'] = date("d-m-Y");
 		$this->data['ledgers'] = $ledgers;
         $this->data['themes'] = $this->transactions->get_list('themes', array(), '','', '', 'id', 'ASC');
         $this->data['add'] = TRUE;
+        $this->data['recipt'] = $recipt;
         $this->layout->title($this->lang->line('add'). ' ' . $this->lang->line('entry'). ' | ' . SMS);
         $this->layout->view('transactions/create', $this->data);
 	}

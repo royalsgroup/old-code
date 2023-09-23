@@ -10,7 +10,7 @@ class Itemstock_model extends MY_Model {
         //$this->current_session = $this->setting_model->getCurrentSession();
     }
 
-    public function get($id = null,$school_id = null,$invoice_id = null, $start_date = null, $end_date = null) {
+    public function get($id = null,$school_id = null,$invoice_id = null) {
 
         $this->db->select('schools.school_name,`item_stock`.*, `item`.`name`,`item`.`item_code`, `item`.`item_category_id`, `item`.`description` as des, `item_category`.`item_category`, `item_supplier`.`item_supplier`, `item_store`.`item_store`, AT.transaction_no,AT.id as transaction_id,IN.invoice_no,IN.grand_total
         ,(select name from account_ledgers where id=item_stock.debit_ledger_id) as debit_ledger
@@ -38,11 +38,6 @@ class Itemstock_model extends MY_Model {
 		else if($this->session->userdata('role_id') == DISTRICT_ADMIN && $school_id==null){
 			$this->db->where('schools.district_id', $this->session->userdata('district_id'));
 		}
-        // $this->db->where('(coalesce(item_stock.financial_year_id,0)=0 or item_stock.financial_year_id=schools.financial_year_id)');
-        if($start_date && $end_date)
-        {
-            $this->db->where("DATE(item_stock.created_at) BETWEEN '$start_date' AND '$end_date'");
-        }
         if($invoice_id)
         {
             $this->db->where('item_stock.invoice_id', $invoice_id);

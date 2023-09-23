@@ -41,6 +41,7 @@ class Payment extends MY_Controller {
         
         $this->data['users'] = '';
         $calculated = 0;
+        $this->data['todayDate']= $todayDate = date("d-m-Y");
         $school_id  = $this->input->post('school_id');
 
          if ($_POST) {
@@ -55,7 +56,7 @@ class Payment extends MY_Controller {
             $debit_ledger_id  = $this->input->post('debit_ledger_id');
             $credit_ledger_id  = $this->input->post('credit_ledger_id');
 			$salary_month=$this->input->post('salary_month');
-            $payment_date =$this->input->post('payment_date');
+            $payment_date = date("Y-m-d"); //$this->input->post('payment_date');
             $absent_days =$this->input->post('absent_days');
             $this->_prepare__bulk_payment_validation();
             if (!$this->form_validation->run()) {
@@ -715,7 +716,8 @@ class Payment extends MY_Controller {
             // debug_a(  [ $startDate,$endDate]);
 
         }  
-       
+        
+        
         $this->layout->title( $this->lang->line('manage_payment'). ' | ' . SMS);
         $this->layout->view('payment/index', $this->data);            
        

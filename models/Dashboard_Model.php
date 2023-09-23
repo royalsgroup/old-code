@@ -84,6 +84,27 @@ class Dashboard_Model extends MY_Model {
         return $this->db->get()->result();
     }
 
+    public function get_drop_student_by_class($school_id = null) {
+
+        $this->db->select('COUNT(E.student_id) AS total_student, C.name AS class_name');
+        $this->db->from('enrollments AS E');
+        $this->db->join('students AS S', 'S.id = E.student_id', 'left');
+        $this->db->join('users AS U', 'U.id = S.user_id', 'left');
+        $this->db->join('classes AS C', 'C.id = E.class_id', 'left');
+        $this->db->join('sections AS SE', 'SE.id = E.section_id', 'left');
+        $this->db->join('schools AS SC', 'SC.id = S.school_id', 'left');
+        $this->db->join('academic_years AS AY', 'AY.id = E.academic_year_id', 'left');
+
+        $this->db->group_by('E.class_id');
+        $this->db->where('E.status', 1);
+        $this->db->where('E.academic_year_id = SC.academic_year_id');
+        $this->db->where('S.status_type !=', 'regular');
+        if ($school_id) {
+            $this->db->where('E.school_id', $school_id);
+        }
+        return $this->db->get()->result();
+    }
+
     public function get_total_student($school_id = null) {
         $school = $this->get_single('schools', array('id' => $school_id));
 
@@ -142,92 +163,6 @@ class Dashboard_Model extends MY_Model {
         return $result->row()->total_student;
     }
 
-    public function get_total_student_present($school_id = null) {
-        $school = $this->get_single('schools', array('id' => $school_id));
-
-        if ($this->session->userdata('role_id') == STUDENT) {
-            
-            $class_id = $this->session->userdata('class_id');
-            
-           
-            $current_month = date('m'); 
-            $current_year = date('Y');  
-            $today = date('j'); 
-
-            $this->db->select('COUNT(id) AS total_student_present');
-            $this->db->from('student_attendances AS SA');
-            $this->db->where('month', $current_month); 
-            $this->db->where('year', $current_year);   
-            $this->db->where("day_$today", 'P');  
-
-            if ($school_id) {
-                $this->db->where('SA.school_id', $school_id);
-            }
-            if ($class_id) {
-                $this->db->where('SA.class_id', $class_id);
-            }
-            if ($school) {
-                $this->db->where('SA.academic_year_id', $school->academic_year_id);
-            }
-
-            
-
-        }else if ($this->session->userdata('role_id') == GUARDIAN) {
-            
-            $current_month = date('m'); 
-            $current_year = date('Y');  
-            $today = date('j'); 
-
-            $this->db->select('COUNT(SA.id) AS total_student_present');
-            $this->db->from('student_attendances AS SA');
-            $this->db->where('month', $current_month); 
-            $this->db->where('year', $current_year);   
-            $this->db->where("day_$today", 'P');  
-            $this->db->join('students AS S', 'S.id = SA.student_id', 'left');
-            $this->db->where('SA.status', 1);
-            
-            if ($school_id) {
-                $this->db->where('SA.school_id', $school_id);
-            }
-            $this->db->where('S.guardian_id',  $this->session->userdata('profile_id'));
-            if ($school) {
-                $this->db->where('SA.academic_year_id', $school->academic_year_id);
-            }
-            
-        } else {            
-          
-            $current_month = date('m'); 
-            $current_year = date('Y');  
-            $today = date('j'); 
-
-            $this->db->select('COUNT(SA.id) AS total_student_present');
-            $this->db->from('student_attendances AS SA');
-            $this->db->where('month', $current_month); 
-            $this->db->where('year', $current_year);   
-            $this->db->where("day_$today", 'P');
-            $this->db->where('SA.status', 1);  
-            if ($school_id) {
-                $this->db->where('SA.school_id', $school_id);
-            }
-            if ($school) {
-                $this->db->where('SA.academic_year_id', $school->academic_year_id);
-            }
-        }
-
-        // $result =  $this->db->get();
-        // // echo $this->db->last_query();
-        // // die();
-        // return $result->row()->total_student_present;
-        $query = $this->db->get();
-        if ($query) {  // Check if the query was successful
-            return $query->row()->total_student_present;
-        } else {
-            $error = $this->db->error();
-            print_r($error);  // Print the database error
-            return 0;  // Return a default value or handle the error
-        }      
-    }
-
     public function get_total_guardian($school_id = null) {
 
         if ($this->session->userdata('role_id') == STUDENT) {
@@ -276,31 +211,8 @@ class Dashboard_Model extends MY_Model {
 
         return $this->db->get()->row()->total_teacher;
     }
+	
 
-    public function get_total_teacher_present($school_id = null) {
-
-        $current_month = date('m'); 
-        $current_year = date('Y');  
-        $today = date('j'); 
-
-        $this->db->select('COUNT(TA.id) AS total_teacher_present');
-        $this->db->from('teacher_attendances AS TA');
-        $this->db->where('month', $current_month); 
-        $this->db->where('year', $current_year);   
-        $this->db->where("day_$today", 'P');  
-        if ($school_id) {
-            $this->db->where('TA.school_id', $school_id);
-        }
-        $query = $this->db->get();
-        if ($query) {  // Check if the query was successful
-            return $query->row()->total_teacher_present;
-        } else {
-            $error = $this->db->error();
-            print_r($error);  // Print the database error
-            return 0;  // Return a default value or handle the error
-        }        
-        // return $this->db->get()->row()->total_teacher_present;
-    }
 
     public function get_total_employee($school_id = null) {
 
@@ -336,4 +248,75 @@ class Dashboard_Model extends MY_Model {
         return $this->db->get()->row()->total_income;
     }
 
+public function get_total_attended_teacher($school_id = null) {
+
+        $month	=	date("m");
+	$year	=	date("Y");
+	$day	=	date("j");
+	$this->db->select('COUNT(TA.id) AS total_attended_teacher');
+        $this->db->from('teacher_attendances AS TA');
+	$this->db->where('TA.month', $month);
+        $this->db->where('TA.year', $year);
+	$this->db->where('TA.day_'.$day, 'P');
+	 if ($school_id) {
+            $this->db->where('TA.school_id', $school_id);
+        }  
+	
+        return $this->db->get()->row()->total_attended_teacher;
+	//return 10;
+    }	
+
+public function get_total_attended_student($school_id = null) {
+
+        $month	=	date('m');
+	$year	=	date('Y');
+	$day	=	date("j");
+	$this->db->select('COUNT(SA.id) AS total_attended_student');
+        $this->db->from('student_attendances AS SA');
+	$this->db->where('SA.month', $month);
+        $this->db->where('SA.year', $year);
+	$this->db->where('SA.day_'.$day, 'P');
+	if ($school_id) {
+            $this->db->where('SA.school_id', $school_id);
+        }       
+		//return 10;
+        return $this->db->get()->row()->total_attended_student;
+    }
+	
+public function get_total_attended_employee($school_id = null) {
+
+        $month	=	date('m');
+	$year	=	date('Y');
+	$day	=	date("j");
+	$this->db->select('COUNT(EA.id) AS total_attended_employee');
+        $this->db->from('employee_attendances AS EA');
+	$this->db->where('EA.month', $month);
+        $this->db->where('EA.year', $year);
+	$this->db->where('EA.day_'.$day, 'P');
+	if ($school_id) {
+            $this->db->where('EA.school_id', $school_id);
+        }       
+		//return 10;
+        return $this->db->get()->row()->total_attended_employee;
+    }
+
+    /*function get_school_class_students(){
+        $school_id = $this->session->userdata('school_id');  
+        $school = $this->get_single('schools', array('id' => $school_id));
+        $academic_year_id = $school->academic_year_id;
+        $sql = "SELECT * FROM `classes` WHERE `school_id` = '$school_id' and status = '1'";
+        $dataRe = $this->db->query($sql)->result();
+        $saveData = array();
+        foreach($dataRe as $key=>$class){
+            //echo "<pre>";print_r($class);die("aaaqqqqq");
+            $class_id = $class->id;
+            $sql = "SELECT * FROM `enrollments` WHERE `school_id` = '$school_id' and class_id = '$class_id' and academic_year_id = '$academic_year_id'";
+            $students = $this->db->query($sql)->num_rows();
+            //echo "<pre>";print_r($students);die;
+            $saveData[$key]['Class'] = $class->name;
+            $saveData[$key]['Students'] = $students;
+        }
+        return $saveData;
+    }*/
 }
+

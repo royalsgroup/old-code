@@ -36,6 +36,9 @@ class Dispatch extends MY_Controller {
         
         check_permission(VIEW);        
         $this->data['dispatches'] = $this->dispatch->get_dispatch($school_id); 
+
+        $this->data['custom_id'] = $this->dispatch->generate_custom_id($school_id);
+
         $this->data['filter_school_id'] = $school_id;
         $this->data['schools'] = $this->schools;
         $this->data['list'] = TRUE;
@@ -98,6 +101,7 @@ class Dispatch extends MY_Controller {
             $this->_prepare_dispatch_validation();
             if ($this->form_validation->run() === TRUE) {
                 $data = $this->_get_posted_dispatch_data();
+               // echo "<pre>";print_r($data );die;
                 $updated = $this->dispatch->update('postal_dispatches', $data, array('id' => $this->input->post('id')));
 
                 if ($updated) {                   
@@ -195,9 +199,16 @@ class Dispatch extends MY_Controller {
         if ($this->input->post('id')) {
             $data['modified_at'] = date('Y-m-d H:i:s');
             $data['modified_by'] = logged_in_user_id();
+            if($this->input->post('custom_id_edit')){
+                $data['custom_id'] =$this->input->post('frontnumberedit').'/'.$this->input->post('custom_id_edit');
+            }
         } else {
             $school = $this->dispatch->get_school_by_id($data['school_id']);
-            $data['custom_id'] =$this->dispatch->generate_custom_id($data['school_id']);
+            if($this->input->post('custom_id_add')){
+                $data['custom_id'] =$this->input->post('frontnumber').'/'.$this->input->post('custom_id_add');
+            }else{
+                $data['custom_id'] =$this->dispatch->generate_custom_id($data['school_id']);
+            }
             $data['academic_year_id'] = $school->academic_year_id;
             $data['created_at'] = date('Y-m-d H:i:s');
             $data['created_by'] = logged_in_user_id();

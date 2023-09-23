@@ -49,6 +49,7 @@ class Classes extends MY_Controller {
         {
            
             $this->data['classes'] = $this->classes->get_class_list($school_id);  
+			
             $condition['alumni'] = 0;        
             $this->data['teachers'] = $this->classes->get_list('teachers', $condition, '','', '', 'id', 'ASC');
         }

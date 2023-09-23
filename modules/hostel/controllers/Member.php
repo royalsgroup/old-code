@@ -297,15 +297,15 @@ exit;
     // if($school_id){
         $school = $this->member->get_school_by_id($school_id);
         $is_hostel_member = 0;
-            $totalRecords = $this->member->get_hostel_non_member_list_total($school_id, @$school->academic_year_id,$search_text);
-            $members = $this->member->get_hostel_non_member_list($school_id, @$school->academic_year_id,$limit,$start,$search_text);
+        $totalRecords = $this->member->get_hostel_member_list_total($is_hostel_member, $school_id, @$school->academic_year_id,$search_text);
+        $members = $this->member->get_hostel_member_list($is_hostel_member, $school_id, @$school->academic_year_id,$limit,$start,$search_text);
        }
        else
        {
          $members = array();
             $totalRecords = 0;
        }
-       $sDebug = $this->db->last_query();
+
        
      
    
@@ -373,8 +373,7 @@ exit;
  "draw" => intval($draw),
  "iTotalRecords" => $totalRecords,
  "iTotalDisplayRecords" => $totalRecords,
- "aaData" => $data,
- "debug"=>$sDebug
+ "aaData" => $data
 );
 echo json_encode($response);
 exit;

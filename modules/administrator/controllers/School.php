@@ -248,7 +248,23 @@ class School extends MY_Controller {
        echo $this->load->view('school/get-single-school', $this->data);
     }
 
-    
+     /*****************Function get_single_school**********************************
+     * @type            : Function
+     * @function name   : get_single_school
+     * @description     : "Load single school information" from database                  
+     *                    to the user interface   
+     * @param           : null
+     * @return          : null 
+     * ********************************************************** */
+    public function get_single_school_print(){
+        
+       $school_id = $this->input->post('school_id');
+       
+       $this->data['school'] = $this->school->get_single('schools', array('id' => $school_id));
+	   $district_id=$this->data['school']->district_id;
+	   $this->data['district'] = $this->school->get_single('districts', array('id' => $district_id));
+       echo $this->load->view('school/get-single-school-print', $this->data);
+    }
     /*****************Function _prepare_school_validation**********************************
     * @type            : Function
     * @function name   : _prepare_school_validation

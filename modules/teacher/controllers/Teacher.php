@@ -574,7 +574,7 @@ exit;
                 $this->teacher->update('users', array('username' => $this->input->post('username'),'role_id'=> $this->input->post('role_id'),'modified_at'=>date('Y-m-d H:i:s')), array('id'=> $this->input->post('user_id')));
             }
             $data['user_id']=$this->input->post('user_id');
-            
+            $data['smc']=$this->input->post('smc_edit');
         } else {
             $data['employee_code']=$this->teacher->generate_employee_code($data['school_id']);
             $data['created_at'] = date('Y-m-d H:i:s');
@@ -582,6 +582,7 @@ exit;
             $data['status'] = 1;
             // create user 
             $data['user_id'] = $this->teacher->create_user($data['employee_code']);
+            $data['smc']=$this->input->post('smc_add');
         }
 
         if ($_FILES['photo']['name']) {
@@ -657,6 +658,7 @@ exit;
             $data['modified_at'] = date('Y-m-d H:i:s');
             $data['modified_by'] = logged_in_user_id();
 			//$data['user_id']=$this->input->post('user_id');
+            $data['smc']=$this->input->post('smc_edit');
         } else {
             $data['teacher_code']=$this->teacher->generate_teacher_code($data['school_id']);
             $data['created_at'] = date('Y-m-d H:i:s');
@@ -664,6 +666,7 @@ exit;
             $data['status'] = 1;
             // create user 
             $data['user_id'] = $this->teacher->create_user($data['teacher_code']);
+            $data['smc']=$this->input->post('smc_add');
             
         }
 

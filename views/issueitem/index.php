@@ -36,51 +36,18 @@
   
             
             <div class="x_content">
-            <?php
-            if ($school_id)
-            {
-           echo form_open_multipart(site_url('/issueitem/index'), array('name' => 'student', 'id' => 'student', 'class' => 'form-horizontal form-label-left'), '');
-           $class_name ="";
-           $fee_type_name ="";
-       ?>
-       
-                            <div class="col-md-3 col-sm-3 col-xs-12">
-                                <input type="hidden" name="school_id" value="<?php echo $school_id ?? 0 ?>"> 
-                                <div class="form-group item">
-                                    <div>Voucher</div>
-
-                                    <select  class="form-control col-md-7 col-xs-12" name="voucher_id" id="voucher_id_filter" required="required">
-                                            <option value="">--<?php echo $this->lang->line('select'); ?>--</option>
-											<?php 
-                                            foreach ($vouchers as $obj)
-                                            {
-                                                $selected = $voucher_id == $obj->id ? "selected" : '';
-                                                echo '<option value="' . $obj->id . '" ' . $selected . '>' . $obj->name."(".$obj->category.")" . '</option>';
-                                            }
-                                            ?>
-										</select>	
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-3 col-xs-12">
-                                <div class="form-group"><br/>
-                                     <button id="send" type="submit" class="btn btn-success"><?php echo $this->lang->line('find'); ?></button>
-                                 </div>
-                             </div>
-                        
-                        <?php echo form_close();
-                        } ?>
                 <div class="" data-example-id="togglable-tabs">
                     
                     <ul  class="nav nav-tabs bordered">
                         <?php if(has_permission(VIEW, 'inventory', 'issueitem')){ ?>
-                            <li class="<?php if(isset($list)){ echo 'active'; }?>"><a href="<?php echo site_url('issueitem'); ?>"  ><i class="fa fa-list-ol"></i> <?php echo $this->lang->line('issueitem'); ?> <?php echo $this->lang->line('list'); ?></a> </li>
+                        <li class="<?php if(isset($list)){ echo 'active'; }?>"><a href="#tab_itemissue_list"   role="tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-list-ol"></i> <?php echo $this->lang->line('issueitem'); ?> <?php echo $this->lang->line('list'); ?></a> </li>
                        <?php } ?>
                        
                        <?php if(has_permission(ADD, 'inventory', 'issueitem')){ ?> 
                             <?php if(isset($edit)){ ?>
                                 <li  class="<?php if(isset($add)){ echo 'active'; }?>"><a href="<?php echo site_url('issueitem/add'); ?>"  aria-expanded="false"><i class="fa fa-plus-square-o"></i> <?php echo $this->lang->line('issueitem'); ?></a> </li>                          
                              <?php }else{ ?>
-                                <li  class="<?php if(isset($add)){ echo 'active'; }?>"><a href="<?php echo site_url('issueitem/add'); ?>" aria-expanded="false"><i class="fa fa-plus-square-o"></i> <?php echo $this->lang->line('issueitem'); ?></a> </li>                          
+                                <li  class="<?php if(isset($add)){ echo 'active'; }?>"><a href="#tab_add_itemissue"  role="tab"  data-toggle="tab" aria-expanded="false"><i class="fa fa-plus-square-o"></i> <?php echo $this->lang->line('issueitem'); ?></a> </li>                          
                              <?php } ?>
                         <?php } ?>                       
                             
@@ -209,7 +176,7 @@
                                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name"><?php echo $this->lang->line('issue_date'); ?> <span class="required">*</span>
                                     </label>
                                    <div class="col-md-6 col-sm-6 col-xs-12">
-										<input type="text" class="form-control date col-md-7 col-xs-12" id="date" name="issue_date" autocomplete="off" value="<?php echo isset($itemissue['issue_date']) ?  date('d/m/Y',strtotime($itemissue['issue_date'])) : ''; ?>" required="requires">										     
+										<input type="text" class="form-control col-md-7 col-xs-12" id="date" name="issue_date" autocomplete="off" value="<?php echo $todayDate; ?>" required="requires" readonly>										     
                                         <div class="help-block"><?php echo form_error('issue_date'); ?></div>
                                    
                                 </div>
@@ -556,7 +523,7 @@ var base_url = '<?php echo base_url() ?>';
                     url: base_url + "itemstock/getItemByCategory",
                     data: {'item_category_id': item_category_id_post},
                     dataType: "json",
-                    async  : true,
+                    async  : false,
                     success: function (data) {
                         $.each(data, function (i, obj)
                         {
@@ -569,7 +536,7 @@ var base_url = '<?php echo base_url() ?>';
                                $.ajax({
                               url: base_url + "itemstock/addCommissionForm",
                                type: 'POST',
-                               async  : true,
+                               async  : false,
                               data: {"aepsCommissionForm": onload, "<?php echo $this->security->get_csrf_token_name(); ?>": "<?php echo $this->security->get_csrf_hash(); ?>"},
                               beforeSend: function(){
                               //  $addCommissionForm.html('<img src="<?php echo base_url("optimum/greay-loading.svg") ?>"/>');
@@ -678,7 +645,7 @@ var base_url = '<?php echo base_url() ?>';
                 url: base_url + "item/getAvailQuantity",
                 data: {'item_id': item_id},
                 dataType: "json",
-                async  : true,
+                async  : false,
                 success: function (data) {
                     if(data.available >0)
                     {
@@ -778,7 +745,7 @@ var base_url = '<?php echo base_url() ?>';
             type   : "POST",
             url    : "<?php echo site_url('ajax/get_itemcategory_by_school'); ?>",
             data   : { school_id:school_id, category_id:category_id},               
-            async  : true,
+            async  : false,
             success: function(response){                                                   
                if(response)
                {                     
@@ -799,7 +766,7 @@ var base_url = '<?php echo base_url() ?>';
             url: base_url + "issueitem/getUser",
             data: {'usertype': usertype,'school_id':school_id},
             dataType: "json",
-            async  : true,
+            async  : false,
             success: function (data) {
 
                 $.each(data.result, function (i, obj)
@@ -828,13 +795,13 @@ var base_url = '<?php echo base_url() ?>';
 var edit = false;
 $('#add_more_btn').hide();
     $("document").ready(function() {
-		<?php if(isset($filter_school_id) && $filter_school_id>=0 && !isset($list_items)){ ?>	
+		<?php if(isset($filter_school_id) && $filter_school_id>=0){ ?>	
             $('#add_more_btn').show();	 
 		 if($("#edit_school_id").length == 0) {			 
              $(".fn_school_id").trigger('change');			 
 		 }
 		 else{			 
-			 $(".fn_school_id").trigger('change');	
+			 $("#edit_school_id").trigger('change');	
 		 }
 		<?php } ?>
        
@@ -983,7 +950,7 @@ $('#add_more_btn').hide();
             data: {
                 school_id: school_id,
             },
-            async: true,
+            async: false,
             success: function(response) {
                 if (response) {
                         $('#voucher_id').html(response);
@@ -994,7 +961,7 @@ $('#add_more_btn').hide();
             type   : "POST",
             url    : "<?php echo site_url('ajax/get_accountledger_by_school'); ?>",
             data   : { school_id:school_id, ledger_id:credit_ledger_id},               
-            async  : true,
+            async  : false,
             success: function(response){                                                   
                if(response)
                {  
@@ -1021,7 +988,7 @@ $('#add_more_btn').hide();
                     url:  '<?php echo site_url("itemstock/getItemBySchool"); ?>',
                     data: {'school_id': school_id},
                     dataType: "json",
-                    async  : true,
+                    async  : false,
                     success: function (data) {
                         $.each(data, function (i, obj)
                         {

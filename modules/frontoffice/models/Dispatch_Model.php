@@ -25,7 +25,7 @@ class Dispatch_Model extends MY_Model {
         if($this->session->userdata('dadmin')==1){
             $this->db->where_in('D.school_id', $this->session->userdata('dadmin_school_ids'));
         }
-        $this->db->where('(coalesce(D.academic_year_id,0)=S.academic_year_id)');
+        $this->db->where('(coalesce(D.academic_year_id,0)=S.academic_year_id or coalesce(D.academic_year_id,0)=0)');
         $this->db->order_by('D.id', 'DESC');
         
         return $this->db->get()->result();

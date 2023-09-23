@@ -219,6 +219,17 @@ if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdat
                                         <div class="help-block"><?php echo form_error('permanent_address'); ?></div>
                                         </div>
                                     </div>
+
+                                     <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <div class="item form-group">
+                                            <label for="smc">SMC</label>
+                                            <select class="form-control col-md-7 col-xs-12 textarea-4column"  name="smc_add"  id="smc_add" onchange="hideanotherdiv('smc_add','payinfodivadd')">
+                                                <option value="yes">Yes</option>
+                                                <option value="no">No</option>
+                                            </select>
+                                        <div class="help-block"><?php echo form_error('smc_add'); ?></div>
+                                        </div>
+                                    </div>
                                     
                                 </div>                                                      
                                                              
@@ -307,6 +318,8 @@ if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdat
                                         </div>
                                     </div>  
                                 </div>
+
+                            <div id='payinfodivadd' >
                                 <div class="row">                  
                                     <div class="col-md-12 col-sm-12 col-xs-12">
                                         <h5  class="column-title"><strong><?php echo $this->lang->line('salary_grade'); ?> <?php echo $this->lang->line('information'); ?>:</strong></h5>
@@ -326,6 +339,8 @@ if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdat
                                 <div id="add_grade_info" class="row"> 
                                    
 								</div>
+
+                            </div>
                                 <div class="row">                  
                                     <div class="col-md-12 col-sm-12 col-xs-12">
                                         <h5  class="column-title"><strong><?php echo $this->lang->line('other'); ?> <?php echo $this->lang->line('information'); ?>:</strong></h5>
@@ -618,6 +633,18 @@ if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdat
                                         <div class="help-block"><?php echo form_error('permanent_address'); ?></div>
                                         </div>
                                     </div>
+
+
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <div class="item form-group">
+                                            <label for="smc">SMC</label>
+                                            <select class="form-control col-md-7 col-xs-12 textarea-4column"  name="smc_edit"  id="smc_edit" onchange="hideanotherdiv('smc_edit','payinfodiv')">
+                                                <option value="yes" <?php if($teacher->smc=='yes'){ echo 'selected';}?>>Yes</option>
+                                                <option value="no" <?php if($teacher->smc=='no'){ echo 'selected';}?>>No</option>
+                                            </select>
+                                        <div class="help-block"><?php echo form_error('smc_edit'); ?></div>
+                                        </div>
+                                    </div>
                                     
                                 </div>                                                      
                                                              
@@ -713,11 +740,15 @@ if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdat
                                         </div>
                                     </div> 
                                 </div>
-                                 <div class="row">                  
+                              
+                            <div id='payinfodiv' <?php if($teacher->smc=='yes'){ echo 'style="display:none"';}?>>
+
+                                   <div class="row">                  
                                     <div class="col-md-12 col-sm-12 col-xs-12">
                                         <h5  class="column-title"><strong><?php echo $this->lang->line('salary_grade'); ?> <?php echo $this->lang->line('information'); ?>:</strong></h5>
                                     </div>
                                 </div>
+
 								<div class="row">
 									<div class="col-md-12 col-sm-12 col-xs-12">
 									<div class="col-md-3 col-sm-3 col-xs-12">
@@ -732,6 +763,7 @@ if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdat
                                 <div id="edit_grade_info" class="row"> 
                                    
 								</div>
+                            </div>
                                 <div class="row">                  
                                     <div class="col-md-12 col-sm-12 col-xs-12">
                                         <h5  class="column-title"><strong><?php echo $this->lang->line('other'); ?> <?php echo $this->lang->line('information'); ?>:</strong></h5>
@@ -1120,5 +1152,15 @@ if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdat
             window.location.href = url; 
         }
     }  
+
+
+    function hideanotherdiv(mainid, payinfodiv){
+        var smcVal = $("#"+mainid).val();
+        if(smcVal == 'no'){
+            $("#"+payinfodiv).show();
+        }else{
+            $("#"+payinfodiv).hide();
+        }
+    }
     
 </script>

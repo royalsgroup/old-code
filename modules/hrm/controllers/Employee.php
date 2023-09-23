@@ -91,7 +91,7 @@ class Employee extends MY_Controller {
         
         $school = $this->employee->get_school_by_id($school_id);
                     
-        
+        //echo "<pre>";print_r($_POST);die;
        if($school_id){
         $employees = $this->employee->get_employee_teachers_list($school_id,$school->academic_year_id,$start,$limit,$search_text);
         $totalRecords = $this->employee->get_employee_teachers_list_total($school_id,$school->academic_year_id,$search_text);
@@ -723,6 +723,7 @@ if(isset($_GET['alumni']) || isset($_POST['alumni'])){
             $this->employee->update('users', array('role_id'=> $this->input->post('role_id'),'username'=> $this->input->post('username'),'modified_at'=>date('Y-m-d H:i:s')), array('id'=> $this->input->post('user_id')));
             }
             $data['user_id']=$this->input->post('user_id');
+            $data['smc']=$this->input->post('smc_edit');
         } 
         else 
         {
@@ -730,6 +731,7 @@ if(isset($_GET['alumni']) || isset($_POST['alumni'])){
             $data['created_at'] = date('Y-m-d H:i:s');
             $data['created_by'] = logged_in_user_id();
             $data['status'] = 1;
+            $data['smc']=$this->input->post('smc_add');
             // create user 
             $data['user_id'] = $this->teacher->create_user($data['teacher_code']);
         }
@@ -815,6 +817,7 @@ if(isset($_GET['alumni']) || isset($_POST['alumni'])){
                 $this->employee->update('users', array('username' => $this->input->post('username'),'role_id'=> $this->input->post('role_id'),'modified_at'=>date('Y-m-d H:i:s')), array('id'=> $this->input->post('user_id')));
             }
             $data['user_id']=$this->input->post('user_id');
+            $data['smc']=$this->input->post('smc_edit');
             
         } else {
             $data['employee_code']=$this->employee->generate_employee_code($data['school_id']);
@@ -823,6 +826,7 @@ if(isset($_GET['alumni']) || isset($_POST['alumni'])){
             $data['status'] = 1;
             // create user 
             $data['user_id'] = $this->employee->create_user($data['employee_code']);
+            $data['smc']=$this->input->post('smc_add');
         }
 
         if ($_FILES['photo']['name']) {

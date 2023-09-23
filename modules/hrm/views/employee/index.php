@@ -201,6 +201,17 @@ if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdat
                                             <div class="help-block"><?php echo form_error('dob'); ?></div>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <div class="item form-group">
+                                            <label for="smc">SMC</label>
+                                            <select class="form-control col-md-7 col-xs-12 textarea-4column"  name="smc_add"  id="smc_add" onchange="hideanotherdiv('smc_add','payinfodivadd')">
+                                                <option value="yes">Yes</option>
+                                                <option value="no">No</option>
+                                            </select>
+                                        <div class="help-block"><?php echo form_error('smc_add'); ?></div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row">
                                         <div class="col-md-6 col-sm-6 col-xs-12">
@@ -218,6 +229,9 @@ if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdat
                                         <div class="help-block"><?php echo form_error('permanent_address'); ?></div>
                                         </div>
                                     </div>
+
+                                    
+
                                   <!-- <div class="col-md-3 col-sm-3 col-xs-12">
                                         <div class="item form-group">
                                             <label for="designation_id"><?php echo $this->lang->line('designation'); ?> <span class="required">*</span></label>
@@ -319,6 +333,8 @@ if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdat
                                     <div class="clearfix"></div>
 
                                 </div>
+
+                                <div id='payinfodivadd' >
                                    <div class="row">                  
                                     <div class="col-md-12 col-sm-12 col-xs-12">
                                         <h5  class="column-title"><strong><?php echo $this->lang->line('salary_grade'); ?> <?php echo $this->lang->line('information'); ?>:</strong></h5>
@@ -338,6 +354,7 @@ if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdat
                                 <div id="add_grade_info" class="row"> 
                                    
 								</div>
+                            </div>
                                 <div class="row">                  
                                     <div class="col-md-12 col-sm-12 col-xs-12">
                                         <h5  class="column-title"><strong><?php echo $this->lang->line('other'); ?> <?php echo $this->lang->line('information'); ?>:</strong></h5>
@@ -631,7 +648,19 @@ if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdat
                                             </select>
                                         <div class="help-block"><?php echo form_error('blood_group'); ?></div> 
                                         </div>
-                                    </div>     
+                                    </div>
+
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <div class="item form-group">
+                                            <label for="smc">SMC</label>
+                                            <select class="form-control col-md-7 col-xs-12 textarea-4column"  name="smc_edit"  id="smc_edit" onchange="hideanotherdiv('smc_edit','payinfodiv')">
+                                                <option value="yes" <?php if($employee->smc=='yes'){ echo 'selected';}?>>Yes</option>
+                                                <option value="no" <?php if($employee->smc=='no'){ echo 'selected';}?>>No</option>
+                                            </select>
+                                        <div class="help-block"><?php echo form_error('smc_edit'); ?></div>
+                                        </div>
+                                    </div>
+
                                     </div>
                                 <div class="row"> 
                                     
@@ -753,6 +782,8 @@ if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdat
                                         </div>
                                     </div>                                       
                                 </div>
+
+                            <div id='payinfodiv' <?php if($employee->smc=='yes'){ echo 'style="display:none"';}?>>
                                 <div class="row">                  
                                     <div class="col-md-12 col-sm-12 col-xs-12">
                                         <h5  class="column-title"><strong><?php echo $this->lang->line('salary_grade'); ?> <?php echo $this->lang->line('information'); ?>:</strong></h5>
@@ -772,6 +803,7 @@ if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdat
                                 <div id="edit_grade_info" class="row"> 
                                    
 								</div>
+                            </div>
                                 <div class="row">                  
                                     <div class="col-md-12 col-sm-12 col-xs-12">
                                         <h5  class="column-title"><strong><?php echo $this->lang->line('other'); ?> <?php echo $this->lang->line('information'); ?>:</strong></h5>
@@ -1195,15 +1227,16 @@ var teacher_text = ``;
             var sch_id='<?php print $filter_school_id; ?>';
           $('#datatable-responsive').DataTable( {
               dom: 'Bfrtip',
+              "ordering": true,
               orderCellsTop: true,
-				fixedHeader: true,
+			  fixedHeader: true,
 			  'processing': true,
-      'serverSide': true,
-      'serverMethod': 'post',
-      'ajax': {
-          'url':'<?php echo site_url("hrm/employee/get_list"); ?>',
-		  'data': {'school_id': sch_id}
-      },
+              'serverSide': true,
+              'serverMethod': 'post',
+              'ajax': {
+                  'url':'<?php echo site_url("hrm/employee/get_list"); ?>',
+        		  'data': {'school_id': sch_id}
+              },
               iDisplayLength: 15,
               buttons: [
                   'copyHtml5',
@@ -1276,5 +1309,14 @@ var teacher_text = ``;
              }
           }
        });
+    }
+
+     function hideanotherdiv(mainid, payinfodiv){
+        var smcVal = $("#"+mainid).val();
+        if(smcVal == 'no'){
+            $("#"+payinfodiv).show();
+        }else{
+            $("#"+payinfodiv).hide();
+        }
     }
 </script>

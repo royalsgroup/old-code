@@ -21,8 +21,15 @@
 				 <div class="item form-group">
                                     <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name"><?php echo $this->lang->line('date'); ?> <span class="required">*</span>
                                     </label>
-                                    <div class="col-md-6 col-sm-6 col-xs-12">										
-										  <input type="text" class="form-control date col-md-7 col-xs-12" id="date" name="date" required='required' autocomplete="off">   
+                                    <div class="col-md-6 col-sm-6 col-xs-12">								
+                                    	
+
+                                    	<?php if(isset($previous_financial_year_activate) && $previous_financial_year_activate>0){?>
+										   <input type="text" class="form-control date col-md-7 col-xs-12" id="date" name="date" required='required' autocomplete="off">
+										<?php }else{ ?>
+											<input type="text" class="form-control col-md-7 col-xs-12" id="date_new" name="date" value="<?php echo $todayDate?>" required='required' autocomplete="off" readonly>  
+
+										<?php } ?> 
                                         <div class="help-block"><?php echo form_error('date'); ?></div>
                                     </div>
                                 </div> 
@@ -128,16 +135,23 @@
                                         	<div class="help-block"><?php echo form_error('narration'); ?></div>
                                    		 </div>
 									
-                                	</div>
-									<?php if($voucher->type_id == 4) { ?>
+                                	</div>                 	
+
+								<input class="form-control col-md-7 col-xs-12" name="reciptid" id='reciptid' type="hidden"  value="<?php echo $recipt?>"      >                                 
+
+									<?php if($recipt == 'yes') { ?>
 									<div class="item form-group">
-										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Pay to
+										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Reciever name
 										</label>
                                     	
 											<div class="col-md-6 col-sm-6 col-xs-12">
 									<input class="form-control col-md-7 col-xs-12" name="reciever_name" type="text"       >                                 
                                     </div>
                                 	</div>
+									<?php } else{?>
+
+										<input class="form-control col-md-7 col-xs-12" name="reciever_name" type="hidden"  value=""     >     
+
 									<?php } ?>
 
 								<div class="item form-group">
@@ -271,6 +285,20 @@ add_head();
                {  
 				//    console.log($('.ledger_'+ledger_id))
 				//    $(this).find('option[value="'+ledger_id+'"]').html(response);
+
+               		let newstr = response.toLowerCase();
+               		if(newstr.indexOf('cash') != -1){
+					    let balance = newstr.match(/\d+/);
+					    if($('#reciptid').val() !='yes'){
+						    if(balance[0] <=0){
+						    	alert("Your balance is 0 kindly update it ");
+								$('#select2-ledger_id-container').text('Select');
+								$("#ledger_id option:first").attr('selected','selected');
+						    	return false;
+						    }
+						}
+					}
+
 					$('.ledger_'+ledger_id).html(response);
 					console.log(select_box)
 					$(select_box).select2();

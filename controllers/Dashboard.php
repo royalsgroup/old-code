@@ -48,12 +48,24 @@ class Dashboard extends MY_Controller {
         $school_id = $this->session->userdata('school_id');   
         $theme = $this->session->userdata('theme');
         
-        $this->data['theme'] = $this->dashboard->get_single('themes', array('status' => 1, 'slug' => $theme));    
+        $this->data['theme'] = $this->dashboard->get_single('themes', array('status' => 1, 'slug' => $theme));
+
+        $studentData = $this->dashboard->get_student_by_class($school_id);
+        $studentDataDroped = $this->dashboard->get_drop_student_by_class($school_id);
+        $studentDataDropedAr = array();
+        foreach ($studentDataDroped as $key => $value) {
+            $class_name = $value->class_name;
+            $total_student = $value->total_student;
+            $studentDataDropedAr["$class_name"] = $total_student;
+        }
+          //echo "<pre>";print_r($studentDataDropedAr);die("aaaqqqqq");
+        $this->data['studentData']   = $studentData;
+        $this->data['studentDataDropedAr']   = $studentDataDropedAr;
 
         if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdata('dadmin') != 1){            
             $this->data['school']   = $this->dashboard->get_single('schools', array('status'=>1, 'id'=>$school_id));
             $school =  $this->data['school'] ;
-            if (isset($school->id) &&  $school->id == 71)
+            if ( $school->id == 71)
             {
                 $_SESSION['debugmode'] =  true;        
             }
@@ -80,7 +92,7 @@ class Dashboard extends MY_Controller {
             //     $this->session->set_userdata('default_data','0');
             // }
 
-            if(isset($school->import_data) && $school->import_data ==1  && 1==0)
+            if(isset($school->import_data) && $school->import_data ==1 )
             {
                     $school_id          = $school->id;
                     $session_start      = Date("01-04-Y",time());
@@ -101,7 +113,7 @@ class Dashboard extends MY_Controller {
                     redirect("debugmode/update_ledger_balaces/0/$school_id");
 
             }
-            if(isset($school->create_academic_year) && $school->create_academic_year ==1 && 1==0 )
+            if(isset($school->create_academic_year) && $school->create_academic_year ==1 )
             {
                 $academic_year_id = $this->create_academic_year($school_id, $school->academic_year_id);	
                 
@@ -206,7 +218,7 @@ class Dashboard extends MY_Controller {
         if(isset($notices) && !empty($notices)){ 
              foreach($notices as $obj ){ 
                 $notice_list .= '<li>
-                    <a href="'.site_url('announcement/notice?notice_id='.$obj->id).'">                                       
+                    <a href="'.site_url('announcement/notice/view/'.$obj->id).'">                                       
                         <span>
                             <span>'.$obj->title.'</span>
                             <span>&nbsp;</span>
@@ -220,7 +232,7 @@ class Dashboard extends MY_Controller {
          if(isset($news) && !empty($news)){ 
          foreach($news as $obj ){
             $news_list .=  '<li>
-                <a href="'.site_url('announcement/news?news_id='.$obj->id).'">
+                <a href="'.site_url('announcement/news/view/'.$obj->id).'">
                     <span class="image">';
                         if($obj->image != ''){ 
                             $news_list .=  '<img src="'.UPLOAD_PATH.'/news/'.$obj->image.'" alt="" width="70" /> ';
@@ -237,7 +249,22 @@ class Dashboard extends MY_Controller {
             </li>';
             }   
         }    
-        
+        $events = $this->dashboard->get_list('events', array('status' => 1, 'school_id'=>$school_id), '', '5', '', 'id', 'DESC');
+        $event_list = "";
+        if(isset($events) && !empty($events)){ 
+             foreach($events as $obj ){ 
+                $event_list .= '<li>
+                    <a href="'.site_url('event/index/0/'.$obj->id).'">                                       
+                        <span>
+                            <span>'.$obj->title.'</span>
+                            <span>&nbsp;</span>
+                            <span class="time">'.get_nice_time($obj->created_at).'</span>
+                        </span>                                        
+                    </a>
+                </li>';
+            }   
+         }  
+		 $response['events'] =   $event_list && $event_list != "" ? $event_list  : "No Events" ; 
          $response['news'] =   $news_list && $news_list != "" ? $news_list  : "No News" ;
          $response['notices'] =   $notice_list && $notice_list != "" ? $notice_list : "No Notices" ;
         echo json_encode( $response);
@@ -350,9 +377,35 @@ class Dashboard extends MY_Controller {
         $data = elements($items, $_POST);
         return $data;
     }
-    public function get_school_data()
+    public function get_school_data($request='')
     {
-        if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdata('dadmin') == 1){    
+        if($request =='yes'){ 
+            foreach($this->schools as $obj){
+            $data = array("name"=> $obj->school_name,"data"=>[]);
+            $arr = array();
+            
+            $total_class = $this->dashboard->get_total_class($obj->id);
+            $total_student = $this->dashboard->get_total_student($obj->id);
+            $total_teacher = $this->dashboard->get_total_teacher($obj->id);
+            $total_employee = $this->dashboard->get_total_employee($obj->id);
+            $total_income = $this->dashboard->get_total_income($obj->id);
+            $total_expenditure = $this->dashboard->get_total_expenditure($obj->id);
+            
+            $arr[] = $total_class > 0 ? $total_class : 0;
+            $arr[] = $total_student > 0 ? $total_student : 0;
+            $arr[] = $total_teacher > 0 ? $total_teacher : 0;
+            $arr[] = $total_employee > 0 ? $total_employee : 0;
+            $arr[] = $total_income > 0 ? $total_income : 0;
+            $arr[] = $total_expenditure > 0 ? $total_expenditure : 0;
+            $data['data'] = $arr;
+            $stats[] = $data;
+            
+            }
+
+            return $stats;
+
+        }else{
+          if($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdata('dadmin') == 1){     
             foreach($this->schools as $obj){
                 $data = array("name"=> $obj->school_name,"data"=>[]);
                 $arr = array();
@@ -372,8 +425,8 @@ class Dashboard extends MY_Controller {
                 $arr[] = $total_expenditure > 0 ? $total_expenditure : 0;
                 $data['data'] = $arr;
                 $stats[] = $data;
-                
-            } 
+            }                 
+        }
             $this->data['stats'] = $stats;
             echo json_encode($this->data);
             die();
@@ -383,12 +436,13 @@ class Dashboard extends MY_Controller {
     {
         $school_id = $this->session->userdata('school_id');   
 
-        $this->data['total_student'] = $this->dashboard->get_total_student($school_id);
-        $this->data['total_guardian'] = $this->dashboard->get_total_guardian($school_id);
-        $this->data['total_teacher'] = $this->dashboard->get_total_teacher($school_id);
-        $this->data['total_employee'] = $this->dashboard->get_total_employee($school_id);
-        $this->data['total_teacher_present'] = $this->dashboard->get_total_teacher_present($school_id);
-        $this->data['total_student_present'] = $this->dashboard->get_total_student_present($school_id);
+	$this->data['total_student'] = $this->dashboard->get_total_student($school_id);
+	$this->data['total_attended_student'] = $this->dashboard->get_total_attended_student($school_id);
+	$this->data['total_guardian'] = $this->dashboard->get_total_guardian($school_id);
+	$this->data['total_teacher'] = $this->dashboard->get_total_teacher($school_id);
+	$this->data['total_attended_teacher'] = $this->dashboard->get_total_attended_teacher($school_id);
+	$this->data['total_employee'] = $this->dashboard->get_total_employee($school_id);
+	$this->data['total_attended_employee'] = $this->dashboard->get_total_attended_employee($school_id);
        
         echo json_encode($this->data);
         die();
@@ -484,5 +538,4 @@ class Dashboard extends MY_Controller {
             return $this->year->insert('academic_years', $data);
         }
     }
-
 }

@@ -67,7 +67,7 @@
                                         </tr>
 										<tr>
 											<th width="30%"><?php echo $this->lang->line('head_ledger'); ?></th>
-											<td><?php echo $transaction->ledger_name; ?></td>
+											<td><?php echo $transaction->ledger_name ." ( ".$transaction->head_cr_dr." )"; ?></td>
                                         </tr>
 										<tr>
 											<th width="30%"><?php echo $this->lang->line('narration'); ?></th>

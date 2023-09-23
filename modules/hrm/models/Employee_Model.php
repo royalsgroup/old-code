@@ -116,6 +116,8 @@ class Employee_Model extends MY_Model {
         
     }
     public function get_employee_teachers_list($school_id = null,$academic_year_id = null,$start = null,$limit = null,$search_text = null){
+
+        $column_order  = array('T1.id','T1.name', 'T1.phone', 'T1.email', 0 ,'T1.salary_type', 'T1.basic_salary','T1.father_name','T1.present_address','T1.qualification', 'T1.gender', 'T1.joining_date');
         
         $this->db->select('E.id,E.photo,E.phone,E.email, E.name,E.school_id, E.salary_type,E.basic_salary, E.father_name,E.present_address, E.qualification, E.gender, E.joining_date,E.dob,E.is_view_on_web, S.school_name, U.username, U.role_id, D.name AS designation');
         $this->db->from('employees AS E');
@@ -168,7 +170,7 @@ class Employee_Model extends MY_Model {
         //var_dump('select * from (('.$employee_query . ') UNION (' . $teacher_query.')) as t1');
         $this->db->select('T1.*');
         $this->db->from("(($employee_query) UNION ($teacher_query)) as T1");
-        $this->db->order_by('T1.name', 'DESC');
+        
         //$final_query = $this->db->query('select * from (('.$employee_query . ') UNION (' . $teacher_query.')) as t1');
         
         if ($limit != null && $start != null) {
@@ -176,8 +178,19 @@ class Employee_Model extends MY_Model {
           }
         // $this->db->order_by('E.id', 'DESC');
         //echo $final_query;
+
+    if (isset($_POST['order']) && $_POST['order']['0']['column']>0) {
+      // here order processing
+       // echo "<pre>";print_r($column_order[$_POST['order']['0']['column']]);die;
        
-        return $this->db->get()->result();
+        
+      $this->db->order_by($column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+    }else{
+        $this->db->order_by('T1.name', 'DESC');
+    }
+       $res = $this->db->get()->result();
+       //echo $this->db->last_query();die;
+        return $res;
         
     }
     public function get_employee_teachers_list_total($school_id = null,$academic_year_id = null,$search_text = null){

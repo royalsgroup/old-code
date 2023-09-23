@@ -127,7 +127,7 @@
                                        <th rowspan="2 " style="width:120px"><?php echo $this->lang->line('class'); ?></th>
                                        <th colspan="3">Last Year  <?php echo $prev_year ?? "" ?></th>
                                        <th rowspan="2 " style="width:120px">Promote</th>
-                                       <th colspan="3">TC </th>
+                                       <th colspan="3">Alumni </th>
                                        <th colspan="3">Current Year <?php echo $current_year ?? "" ?> New Admission</th>
                                        <th colspan="3">Total Student</th>
                                        <th rowspan="2">Goal</th>
@@ -292,13 +292,13 @@
                                            <td><?php echo $iPromoted ?></td> 
                                            <td><?php echo $left_boys_count ?></td> 
                                            <td><?php echo $left_girls_count ?></td> 
-                                           <td><?php echo($left_boys_count+$left_girls_count) ?></td>
+                                           <td><?php echo($tcdata = $left_boys_count+$left_girls_count) ?></td>
                                            <td><?php echo $new_boys_count ?></td> 
                                            <td><?php echo $new_girls_count ?></td> 
                                            <td><?php echo($new_boys_count+$new_girls_count) ?></td>
                                            <td><?php echo $curr_boys_count?></td> 
                                            <td><?php echo $curr_girls_count  ?></td> 
-                                           <td><?php echo($curr_boys_count+$curr_girls_count) ?></td>
+                                           <td><?php echo($curr_boys_count+$curr_girls_count-$tcdata) ?></td>
                                            <td></td>
                                
                                        </tr>
@@ -347,7 +347,6 @@
    </div>
 </div>
 <script type="text/javascript">
-var extra_value = <?php echo isset($extra_value) && $extra_value ?  $extra_value : 0 ?>;
 
 function doit(type, fn, dl) {
 	var elt = document.getElementById('datatable-keytable');
@@ -418,38 +417,7 @@ $(document).ready(function() {
            }
        });
   }  
-  $('#fee_type').change(function(){
-        getextra_dropwdown( $(this).val())
-   })
-  function getextra_dropwdown(fee_type)
-   {
-        $('#extra_dropdown').hide();
-        var school_id = $('#school_id').val();
-        var academic_year_id = <?php echo isset($academic_year_id) && $academic_year_id ?  $academic_year_id : 0 ?>;
-        $.ajax({       
-            type   : "POST",
-            url    : "<?php echo site_url('ajax/get_extra_dropdowns'); ?>",
-            data   : { school_id:school_id, academic_year_id :academic_year_id,  fee_type :fee_type, extra_value : extra_value},               
-            async  : false,
-            success: function(response){                                                   
-                if(response)
-                { 
-                    if (response)
-                    {
-                        $('#extra_dropdown').show();
-                        $('#extra_dropdown').html(response)
-                    }
-                    else
-                    {
-                        $('#extra_dropdown').hide();
 
-                        $('#extra_dropdown').html('')
-
-                    }
-                }
-            }
-        });
-   }
   // ak
 
     $(document).ready(function(){

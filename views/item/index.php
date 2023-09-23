@@ -46,48 +46,6 @@
                     <div class="tab-content">
                         <div  class="tab-pane fade in <?php if(isset($list)){ echo 'active'; }?>" id="tab_item_list" >
                             <div class="x_content">
-                            <?php
-           
-           echo form_open_multipart(site_url('/item/index'), array('name' => 'student', 'id' => 'student', 'class' => 'form-horizontal form-label-left'), '');
-           $class_name ="";
-           $fee_type_name ="";
-       ?>
-                            <div class="col-md-3 col-sm-3 col-xs-12" >
-                                <div class="form-group item">
-                                    <div>Item Group </div>
-
-                                        <select class="form-control col-md-7 col-xs-12" id="filter_group_id" name="group_id" style="width:auto;" >
-                                        <option value="">All</option>
-
-                                        <?php foreach($item_groups as $group) { 
-                                            ?>
-                                            <option value="<?php echo  $group->id  ?>" <?php echo isset($group_id) && $group_id == $group->id ? "selected='selected'" : "" ; ?> ><?php echo  $group->name  ?></option>
-                                        <?php } ?>                                
-                                        </select>
-                                </div>
-                             </div>
-                            <div class="col-md-3 col-sm-3 col-xs-12">
-                                <div class="form-group item">
-                                    <div>Item Category</div>
-
-                                    <select name="category_id" class="form-control col-md-7 col-xs-12" id="category_id">
-                                    <option value="">All</option>
-                                    <?php foreach($item_categories as $item_category) {
-                                        ?>
-                                                <option value="<?php echo  $item_category->id  ?>" <?php echo isset($category_id) && $category_id == $item_category->id ? 'selected="selected"' : "" ; ?> ><?php echo  $item_category->name  ?></option>
-                                            <?php } ?>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-3 col-xs-12">
-                                <div class="form-group"><br/>
-                                     <button id="send" type="submit" class="btn btn-success"><?php echo $this->lang->line('find'); ?></button>
-                                 </div>
-                             </div>
-                        </div>
-                        
-                        <?php echo form_close(); ?>
-
                                 <?php 
                                 
                                 if($filter_school_id) { ?> 
@@ -104,7 +62,6 @@
                                         <th><?php echo $this->lang->line('item_code'); ?></th>
 
 										<th><?php echo $this->lang->line('category'); ?></th>
-										<th><?php echo $this->lang->line('group'); ?></th>
 										<!-- <th><?php echo $this->lang->line('unit'); ?></th> -->
                                         <th>MRP</th>
                                         <th>Purchase Value</th>
@@ -129,7 +86,6 @@
                                             <td><?php echo $obj['item_code']; ?></td>
 
 											<td><?php echo $obj['item_category']; ?></td>
-											<td><?php echo $obj['group_name']; ?></td>
 											<!-- <td><?php echo $obj['unit']; ?></td> -->
 
 											<td><?php echo $obj['mrp'] ; ?></td>
@@ -155,6 +111,7 @@
                                     <?php } ?>
                                 </tbody>
                             </table>                                
+                            </div>
                         </div>
 
                         <div  class="tab-pane fade in <?php if(isset($add)){ echo 'active'; }?>" id="tab_add_item">
@@ -192,28 +149,14 @@
 										</div>
                                     </div>                                                                      
 								
-								 <!-- <div class="item form-group">                        
+								 <div class="item form-group">                        
                                     
                                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name"><?php echo $this->lang->line('unit'); ?> <span class="required">*</span></label>
 											<div class="col-md-6 col-sm-6 col-xs-12">
                                             <input  class="form-control col-md-7 col-xs-12"  name="unit"  id="unit" value="<?php echo isset($post['unit']) ?  $post['unit'] : ''; ?>" placeholder="<?php echo $this->lang->line('unit'); ?> "  type="text" autocomplete="off" required='required'>
                                             <div class="help-block"><?php echo form_error('unit'); ?></div> 
-                                        </div> -->
-                                    <!-- </div>       -->
-                                <div class="item form-group">                        
-                                    
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Measurement <span class="required">*</span></label>
-                                    <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <select  name="unit"  id="unit" >
-                                            <option  value="0">Pic(pices)</option>
-                                            <option  value="1"> DZ (Dozen)</option>
-                                            <option  value="2">Set (Sets)</option>
-                                            <option  value="3">CP(copies)</option>
-                                        </select>
-                                    <!-- <input  class="form-control col-md-7 col-xs-12"  name="unit"  id="unit" value="<?php echo isset($post['unit']) ?  $post['unit'] : ''; ?>" placeholder="<?php echo $this->lang->line('unit'); ?> "  type="text" autocomplete="off" required='required'> -->
-                                    <div class="help-block"><?php echo form_error('unit'); ?></div> 
-                                    </div>
-                                </div>               
+                                        </div>
+                                    </div>              
                                 <div class="item form-group">                        
                                     
                                     <label class="control-label col-md-3 col-sm-3 col-xs-12" for="item_code"><?php echo $this->lang->line('item_code'); ?> </label>
@@ -222,14 +165,7 @@
                                     <div class="help-block"><?php echo form_error('item_code'); ?></div> 
                                     </div>
                                 </div>                                                                  
-								<div class="item form-group">                        
-                                    
-                                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name"><?php echo $this->lang->line('purchase_price'); ?> <span class="required">*</span></label>
-											<div class="col-md-6 col-sm-6 col-xs-12">
-                                            <input  class="form-control col-md-7 col-xs-12"  name="purchase_price"  id="purchase_price" value="<?php echo isset($post['purchase_price']) ?  $post['purchase_price'] : ''; ?>" placeholder="<?php echo $this->lang->line('purchase_price'); ?> "  type="text" autocomplete="off" required='required'>
-                                            <div class="help-block"><?php echo form_error('purchase_price'); ?></div> 
-                                        </div>
-                                    </div>            
+								
 								<div class="item form-group">                        
                                     
                                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name"><?php echo $this->lang->line('description'); ?></label>
@@ -286,29 +222,14 @@
 										</div>
                                     </div>                                                                      
 								
-								 <!-- <div class="item form-group">                        
+								 <div class="item form-group">                        
                                     
                                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name"><?php echo $this->lang->line('unit'); ?> <span class="required">*</span></label>
 											<div class="col-md-6 col-sm-6 col-xs-12">
                                             <input  class="form-control col-md-7 col-xs-12"  name="unit"  id="unit" value="<?php echo isset($item->unit) ?  $item->unit : ''; ?>" placeholder="<?php echo $this->lang->line('unit'); ?> "  type="text" autocomplete="off" required='required'>
                                             <div class="help-block"><?php echo form_error('unit'); ?></div> 
                                         </div>
-                                    </div>      -->
-                                    <div class="item form-group">                        
-                                    
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Measurement <span class="required">*</span></label>
-                                    <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <select  name="unit"  id="unit" >
-                                        <option  value="">-- Select Measurement --</option>
-                                            <option  value="0" <?php echo isset($item->unit) && $item->unit == 0 ?  "selected" : ''; ?>>Pic(pices)</option>
-                                            <option  value="1" <?php echo isset($item->unit) && $item->unit == 1 ?  "selected" : ''; ?>> DZ (Dozen)</option>
-                                            <option  value="2" <?php echo isset($item->unit) && $item->unit == 2 ?  "selected" : ''; ?>>Set (Sets)</option>
-                                            <option  value="3" <?php echo isset($item->unit) && $item->unit == 3 ?  "selected" : ''; ?>>CP(copies)</option>
-                                        </select>
-                                    <!-- <input  class="form-control col-md-7 col-xs-12"  name="unit"  id="unit" value="<?php echo isset($post['unit']) ?  $post['unit'] : ''; ?>" placeholder="<?php echo $this->lang->line('unit'); ?> "  type="text" autocomplete="off" required='required'> -->
-                                    <div class="help-block"><?php echo form_error('unit'); ?></div> 
-                                    </div>
-                                </div>                                                                        
+                                    </div>                                                                      
                                     <div class="item form-group">                        
                                     
                                     <label class="control-label col-md-3 col-sm-3 col-xs-12" for="item_code"><?php echo $this->lang->line('item_code'); ?> </label>
@@ -347,9 +268,6 @@
 </div>
 
  <script type="text/javascript">   
-    var filter_school_id = <?php echo isset($filter_school_id) && $filter_school_id ?  $filter_school_id : 0 ; ?>;
-    var filter_category_id = <?php echo isset($category_id) && $category_id ?  $category_id : 0 ; ?>;
-    var group_id = <?php echo isset($group_id) && $group_id ?  $group_id : 0 ; ?>;
 
     $(document).ready(function() {
           $('#datatable-responsive').DataTable( {
@@ -360,15 +278,8 @@
                   'excelHtml5',
                   'csvHtml5',
                   'pdfHtml5',
-                  'pageLength',
-                  'colvis'
+                  'pageLength'
               ],
-              "columnDefs": [
-                    {
-						"targets": [4,7,8,9] ,
-                        "visible": false,
-					}
-            ],
               search: true,              
               responsive: true
           });
@@ -387,7 +298,6 @@
     var edit = false;
          
     $("document").ready(function() {
-        get_item_category(group_id)
 		<?php if(isset($filter_school_id) && $filter_school_id>=0){ ?>		 
 		 if($("#edit_school_id").length == 0) {			 
              $(".fn_school_id").trigger('change');			 
@@ -434,21 +344,5 @@
             }
         });
     }); 
-    $('#filter_group_id').on('change', function(){
-        get_item_category( $(this).val())
-    })
-    function get_item_category(group_id){       
-        $.ajax({       
-            type   : "POST",
-            url    : "<?php echo site_url('ajax/get_item_category_by_group'); ?>",
-            data   : { school_id:filter_school_id, category_id : filter_category_id, group_id : group_id },               
-            async  : false,
-            success: function(response){                                                   
-            if(response)
-            { 
-                $('#category_id').html(response); 
-            }
-            }
-        });
-} 
+       
   </script>

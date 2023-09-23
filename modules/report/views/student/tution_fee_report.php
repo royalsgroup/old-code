@@ -1,6 +1,6 @@
 
 <?php
-$sFeeType = $fee_type;
+
 ?>
   <?php if(isset($school_id) && !empty($school_id)){ 
    }
@@ -132,7 +132,6 @@ $sFeeType = $fee_type;
                                         <?php if($_POST) {?>
                                             <tr>
                                                 <th colspan="14" style="text-align : center">
-                                                    Tution Fee Report |  
                                                    <?php if(isset($school))  echo " ".$school->school_name." "  ?> | 
                                                    <?php  echo  $fee_type_name   ?> 
                                                 </th>
@@ -168,17 +167,8 @@ $sFeeType = $fee_type;
                                             $icount = 0;
                                             foreach($fee_data as $data) { 
                                                 if ($data['total_students'] == 0) continue;
-                                                if ($sFeeType == "transport" || $sFeeType == "hostel")
-                                                {
-                                                    $data['fee_amount'] = 0;;
-                                                    $total_annual_fees = $data['total_fees_amount'];
-
-                                                }
-                                                else 
-                                                {
-                                                    $data['fee_amount'] = $data['total_students'] == 0 ? 0 : $data['fee_amount'];
-                                                    $total_annual_fees = $data['fee_amount']*$data['total_students'];
-                                                }
+                                                $total_annual_fees = $data['fee_amount']*$data['total_students'];
+                                                $data['fee_amount'] = $data['total_students'] == 0 ? 0 : $data['fee_amount'];
                                                 $total_rte_annual_fees = $data['fee_amount']*$data['rte_students'];
                                                 $total_net_amount =  $total_annual_fees -  $total_rte_annual_fees - $data['total_discount_amount'];
                                                 $icount++;

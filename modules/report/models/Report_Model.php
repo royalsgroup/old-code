@@ -10,9 +10,11 @@ class Report_Model extends MY_Model {
     }
     public function get_academic_years($school_id)
     {
-        $this->db->select("AY.id,AY.session_year curr_start,AY.end_year as curr_end , AY.previous_academic_year_id
-        ,(select id from academic_years where  id=AY.previous_academic_year_id order by start_year limit 1) as prev
-        ,(select session_year from academic_years where  id=AY.previous_academic_year_id order by start_year limit 1) as prev_start_year
+        $this->db->select("AY.id,AY.start_year curr_start,AY.session_year as curr_session_year ,AY.end_year as curr_end 
+        ,(select id from academic_years where start_year<AY.start_year and id=AY.previous_academic_year_id order by start_year limit 1) as prev
+        ,(select start_year from academic_years where start_year<AY.start_year and id=AY.previous_academic_year_id order by start_year limit 1) as prev_start_year
+        ,(select session_year from academic_years where start_year<AY.start_year and id=AY.previous_academic_year_id order by start_year limit 1) as prev_session_year
+        ,(select end_year from academic_years where start_year<AY.start_year and id=AY.previous_academic_year_id order by start_year limit 1) as prev_end_year
         ");
         $this->db->from(' schools AS S');
         $this->db->join('academic_years AS AY', 'AY.id = S.academic_year_id');        
@@ -86,7 +88,7 @@ class Report_Model extends MY_Model {
         }
         else if ( $type == "transport")
         {
-            $this->db->select("S.class_id,S.id,S.name as section_name,C.name as class_name, RS.stop_fare as fee_amount, RS.yearly_stop_fare, count(TM.id) member_count");
+            $this->db->select("S.class_id,S.id,S.name as section_name,C.name as class_name, RS.stop_fare as fee_amount, RS.yearly_stop_fare");
             $this->db->from('enrollments AS E');
             $this->db->join('classes AS C', 'C.id = E.class_id', 'left');
             $this->db->join('sections AS S', 'C.id = S.class_id','left');
@@ -100,13 +102,13 @@ class Report_Model extends MY_Model {
             }
             $this->db->where("TM.id >0");
             $this->db->where("C.school_id",$school_id ); 
-            $this->db->group_by("S.class_id,S.id, RS.id"); 
+            $this->db->group_by("S.class_id,S.id"); 
             $result =  $this->db->get();  
             return $result->result();  
         }
         else if ( $type == "hostel")
         {
-            $this->db->select("S.class_id,S.id,S.name as section_name,C.name as class_name, R.cost as fee_amount, R.yearly_room_rent, count(HM.id) member_count");
+            $this->db->select("S.class_id,S.id,S.name as section_name,C.name as class_name, R.cost as fee_amount, R.yearly_room_rent");
             $this->db->from('enrollments AS E');
             $this->db->join('classes AS C', 'C.id = E.class_id', 'left');
             $this->db->join('sections AS S', 'C.id = S.class_id','left');
@@ -120,7 +122,7 @@ class Report_Model extends MY_Model {
             }
             $this->db->where("HM.id >0");
             $this->db->where("C.school_id",$school_id ); 
-            $this->db->group_by("S.class_id,S.id, R.id"); 
+            $this->db->group_by("S.class_id,S.id"); 
             $result =  $this->db->get();  
             return $result->result();  
         }
@@ -133,15 +135,11 @@ class Report_Model extends MY_Model {
     {
         $sRteQuery = "coalesce(E.rte,S.rte) as rte";
         if ( $type != "fee" )$sRteQuery = "'no' as rte";
-        $this->db->select("count(*) as count,E.class_id,coalesce(E.section_id,0) section_id,$sRteQuery");
+        $this->db->select("count(*) as count,E.class_id,E.section_id,$sRteQuery");
         $this->db->from('enrollments E');
         $this->db->join('students AS S', 'S.id = E.student_id','left');
         $this->db->where("E.school_id",$school_id ); 
-        $this->db->group_start();
         $this->db->where_in("E.section_id",$section_ids ); 
-        $this->db->or_where("coalesce(E.section_id,0)=0" ); 
-
-        $this->db->group_end();
         $this->db->where_in("E.class_id",$class_ids ); 
         if($academic_year_id)
         {
@@ -150,14 +148,11 @@ class Report_Model extends MY_Model {
         if ( $type == "transport")
         {
             $this->db->join('transport_members AS TM', 'TM.user_id = S.user_id', 'left');
-            $this->db->where("(TM.academic_year_id=$academic_year_id or coalesce(TM.academic_year_id,0)=0)");
-
             $this->db->where("TM.id >0");
         }
         else if ( $type == "hostel")
         {
             $this->db->join('hostel_members AS HM', 'HM.user_id = S.user_id', 'left');
-            $this->db->where("(HM.academic_year_id=$academic_year_id or coalesce(HM.academic_year_id,0)=0)");
             $this->db->where("HM.id >0");
         }
         $this->db->where('S.status_type', 'regular'); 
@@ -567,50 +562,30 @@ class Report_Model extends MY_Model {
 
     }
    
-     public function get_hostel_students($school_id = null,$class_id =null, $academic_year_id =null, $previous_academic_year_id = null, $hostel_id = null)
+     public function get_hostel_students($school_id = null,$class_id =null, $academic_year_id =null)
      {
-         $this->db->select("S.*, E.academic_year_id
+         $this->db->select("S.*
          ,(select name from classes where id=E.class_id) as class
          ,(select name from sections where id=E.section_id) as section
-         ,R.cost as fee_amount,R.yearly_room_rent as yearly_room_rent, 'hostel' as type");
+         ,R.cost as fee_amount,R.yearly_room_rent as , 'hostel' as type");
          $this->db->from('students AS S');        
          $this->db->join('enrollments AS E', 'E.student_id = S.id');
-         if ($class_id)
-         {
-            $this->db->where('E.class_id', $class_id);   
-
-         }
+   
          $this->db->where("S.school_id=$school_id ");   
      
+         $this->db->where('E.class_id', $class_id);   
          $this->db->join('hostel_members AS HM', 'HM.user_id = S.user_id', 'left');
          $this->db->where('HM.id>0');
-         if ($hostel_id)
-         {
-            $this->db->where('HM.hostel_id', $hostel_id);
-            $this->db->where('R.hostel_id', $hostel_id);
-         }
         $this->db->join('rooms AS R', 'R.id = HM.room_id', 'left');
-        if ($previous_academic_year_id)
-        {
-            $this->db->where("(E.academic_year_id=$academic_year_id or E.academic_year_id=$previous_academic_year_id)");   
-            if($academic_year_id){
-                $this->db->where("(HM.academic_year_id=$previous_academic_year_id or HM.academic_year_id=$academic_year_id or coalesce(HM.academic_year_id,0)=0)");
-                $this->db->where('E.academic_year_id', $academic_year_id);
-            }
+        if($academic_year_id){
+            $this->db->where("(HM.academic_year_id=$academic_year_id or coalesce(HM.academic_year_id,0)=0)");
+            $this->db->where('E.academic_year_id', $academic_year_id);
         }
-        else
-        {
-            if($academic_year_id){
-                $this->db->where("(HM.academic_year_id=$academic_year_id or coalesce(HM.academic_year_id,0)=0)");
-                $this->db->where('E.academic_year_id', $academic_year_id);
-            }
-        }
-        
          $this->db->where('S.status_type', 'regular'); 
 
          $result =  $this->db->get();  
-        //  echo $this->db->last_query();
-        //  die();
+         // echo $this->db->last_query();
+         // die();
          return $result->result();  
  
      }
@@ -728,49 +703,30 @@ class Report_Model extends MY_Model {
        return $result->result();  
    }
    
-     public function get_transport_students($school_id = null,$class_id =null, $academic_year_id =null, $previous_academic_year_id = null, $route_id = null)
+     public function get_transport_students($school_id = null,$class_id =null, $academic_year_id =null)
      {
-         $this->db->select("S.*, RS.stop_fare as fee_amount, RS.yearly_stop_fare as yearly_fee_amount, 'transport' as type, E.academic_year_id
+         $this->db->select("S.*, RS.stop_fare as fee_amount, RS.yearly_stop_fare as yearly_fee_amount, 'transport' as type
          ,(select name from classes where id=E.class_id) as class
          ,(select name from sections where id=E.section_id) as section");
          $this->db->from('students AS S');        
          $this->db->join('enrollments AS E', 'E.student_id = S.id');
    
          $this->db->where("S.school_id=$school_id ");   
-        if ($class_id)
-        {
-            $this->db->where('E.class_id', $class_id);   
-        }
-        if ($previous_academic_year_id)
-        {
-            $this->db->where("(E.academic_year_id=$academic_year_id or E.academic_year_id=$previous_academic_year_id)");   
-            if($academic_year_id){
-                $this->db->where("(TM.academic_year_id=$previous_academic_year_id or TM.academic_year_id=$academic_year_id or coalesce(TM.academic_year_id,0)=0)");
-                $this->db->where('E.academic_year_id', $academic_year_id);
-            }
-        }
-        else
-        {
-            $this->db->where('E.academic_year_id', $academic_year_id);   
-            if($academic_year_id){
-                $this->db->where("(TM.academic_year_id=$academic_year_id or coalesce(TM.academic_year_id,0)=0)");
-                $this->db->where('E.academic_year_id', $academic_year_id);
-            }
-        }
-       
+     
+         $this->db->where('E.class_id', $class_id);   
+     
+         $this->db->where('E.academic_year_id', $academic_year_id);   
          $this->db->join('transport_members AS TM', 'TM.user_id = S.user_id', 'left');
          $this->db->join('route_stops AS RS', 'RS.id = TM.route_stop_id', 'left');
          $this->db->where('S.status_type', 'regular'); 
-         if ($route_id)
-        {
-           $this->db->where('TM.route_id', $route_id);
-           $this->db->where('RS.route_id', $route_id);
-
+         if($academic_year_id){
+            $this->db->where("(TM.academic_year_id=$academic_year_id or coalesce(TM.academic_year_id,0)=0)");
+            $this->db->where('E.academic_year_id', $academic_year_id);
         }
         $this->db->where("TM.id >0");
          $result =  $this->db->get();  
-        //  echo $this->db->last_query();
-        //  die();
+         // echo $this->db->last_query();
+         // die();
          return $result->result();  
  
      }
@@ -783,9 +739,9 @@ class Report_Model extends MY_Model {
          return $this->db->get()->row();  
         
     }
-    public function get_students($school_id,$class_id, $academic_year_id, $fee_amount, $previous_academic_year_id = null)
+    public function get_students($school_id,$class_id, $academic_year_id,$fee_amount,$section_id='')
     {
-        $this->db->select("S.*, '$fee_amount' as fee_amount,  coalesce(E.rte,S.rte) as rte, E.academic_year_id
+        $this->db->select("S.*, '$fee_amount' as fee_amount,  coalesce(E.rte,S.rte) as rte
         ,(select name from classes where id=E.class_id) as class
          ,(select name from sections where id=E.section_id) as section");
         $this->db->from(' enrollments AS E');        
@@ -794,14 +750,11 @@ class Report_Model extends MY_Model {
         $this->db->where("S.school_id=$school_id ");   
     
         $this->db->where('E.class_id', $class_id);   
-        if ($previous_academic_year_id)
-        {
-            $this->db->where("(E.academic_year_id=$academic_year_id or E.academic_year_id=$previous_academic_year_id)");   
+        if($section_id>0){
+            $this->db->where('E.section_id', $section_id);   
         }
-        else
-        {
-            $this->db->where('E.academic_year_id', $academic_year_id);   
-        }
+    
+        $this->db->where('E.academic_year_id', $academic_year_id);   
         $this->db->where('S.status_type', 'regular'); 
 
 
@@ -811,9 +764,9 @@ class Report_Model extends MY_Model {
         return $result->result();  
 
     }
-    public function get_paid_students_installment_data( $student_ids,$school_id,$class_id,$income_head_id, $academic_year_id , $previous_academic_year_id = null)
+    public function get_paid_students_installment_data( $student_ids,$school_id,$class_id,$income_head_id, $academic_year_id)
     {
-        $this->db->select("I.net_amount,I.discount,I.emi_type,E.student_id,  E.academic_year_id");
+        $this->db->select("I.net_amount,I.discount,I.emi_type,E.student_id");
         $this->db->from('invoices I');
         $this->db->join('enrollments AS E', 'E.student_id = I.student_id','left');
         $this->db->where("E.school_id",$school_id );
@@ -824,12 +777,7 @@ class Report_Model extends MY_Model {
         $this->db->where("I.paid_status","paid" ); 
         $this->db->where("I.income_head_id",$income_head_id ); 
         // $this->db->where("I.net_amount>0"); 
-        if ( $previous_academic_year_id)
-        {
-            $this->db->where("E.academic_year_id=$academic_year_id or E.academic_year_id=$previous_academic_year_id"); 
-        }
-        else
-            $this->db->where("E.academic_year_id", $academic_year_id); 
+        $this->db->where("E.academic_year_id", $academic_year_id); 
        
         $result =  $this->db->get();  
         // echo $this->db->last_query();

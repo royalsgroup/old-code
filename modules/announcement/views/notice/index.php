@@ -85,7 +85,7 @@
                                                     <a href="<?php echo site_url('announcement/notice/edit/'.$obj->id); ?>" class="btn btn-info btn-xs"><i class="fa fa-pencil-square-o"></i> <?php echo $this->lang->line('edit'); ?> </a>
                                                 <?php } ?>
                                                 <?php if(has_permission(VIEW, 'announcement', 'notice')){ ?>
-                                                    <a  onclick="get_notice_modal(<?php echo $obj->id; ?>);"  data-toggle="modal" data-target=".bs-notice-modal-lg" id="view_<?php echo $obj->id; ?>" class="btn btn-success btn-xs"><i class="fa fa-eye"></i> <?php echo $this->lang->line('view'); ?> </a>
+                                                    <a  onclick="get_notice_modal(<?php echo $obj->id; ?>);"  data-toggle="modal" data-target=".bs-notice-modal-lg"  class="btn btn-success btn-xs"><i class="fa fa-eye"></i> <?php echo $this->lang->line('view'); ?> </a>
                                                 <?php } ?>
                                                 <?php if(has_permission(DELETE, 'announcement', 'notice')){ ?>
                                                     <a href="<?php echo site_url('announcement/notice/delete/'.$obj->id); ?>" onclick="javascript: return confirm('<?php echo $this->lang->line('confirm_alert'); ?>');" class="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i> <?php echo $this->lang->line('delete'); ?> </a>
@@ -287,13 +287,7 @@
    $('#add_notice').jqte(); 
    $('#edit_notice').jqte(); 
  </script>
- <?php if ($notice_id) { ?>
-    <script>
-        $(document).ready(function(){
-            $('#view_'+<?php echo $notice_id ?>).click()
-        })
-    </script>
-<?php } ?>
+ 
   <!-- bootstrap-datetimepicker -->
  <link href="<?php echo VENDOR_URL; ?>datepicker/datepicker.css" rel="stylesheet">
  <script src="<?php echo VENDOR_URL; ?>datepicker/datepicker.js"></script>

@@ -127,6 +127,7 @@ if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdat
                                             <td>
                                                 <?php if(has_permission(VIEW, 'administrator', 'school')){ ?>
                                                     <a  onclick="get_school_modal(<?php echo $obj->id; ?>);"  data-toggle="modal" data-target=".bs-school-modal-lg"  class="btn btn-success btn-xs"><i class="fa fa-eye"></i> <?php echo $this->lang->line('view'); ?> </a><br/>
+													 <a  onclick="printPageArea(<?php echo $obj->id; ?>);"    class="btn btn-info btn-xs"><i class="fa fa-print"></i> <?php echo $this->lang->line('print'); ?> </a><br/>
                                                 <?php } ?>    
                                                 <?php if(has_permission(EDIT, 'administrator', 'school')){ ?>
                                                     <a href="<?php echo site_url('administrator/school/edit/'.$obj->id); ?>" class="btn btn-info btn-xs"><i class="fa fa-pencil-square-o"></i> <?php echo $this->lang->line('edit'); ?> </a>
@@ -1265,6 +1266,27 @@ if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdat
           }
        });
     }
+	function printPageArea(school_id){
+	//$('.fn_school_data').html('<p style="padding: 20px;"><p style="padding: 20px;text-align:center;"><img src="<?php echo IMG_URL; ?>loader.gif" /></p>');
+        $.ajax({       
+          type   : "POST",
+          url    : "<?php echo site_url('administrator/school/get_single_school_print'); ?>",
+          data   : {school_id : school_id},  
+          success: function(response){                                                   
+             if(response)
+             {
+                //$('.fn_school_data').html(response);
+				var printContent = response;
+    var originalContent = document.body.innerHTML;
+    document.body.innerHTML = printContent;
+    window.print();
+    document.body.innerHTML = originalContent;
+             }
+          }
+       });
+	
+    
+}
 </script>
   <script type="text/javascript">   
 var edit = false;

@@ -1378,67 +1378,7 @@ else{
 
         echo $str;
     }
-    public function get_item_category_by_group()
-    {
-        $category_id  = $this->input->post('category_id');
-        $group_id  = $this->input->post('group_id');
-        $school_id  = $this->input->post('school_id');
-        $item_categories = $this->ajax->get_itemcategory_list($school_id, $group_id);	
-        $str = '<option value="">ALL</option>';
-        if(isset($item_categories) && !empty($item_categories)){
-            foreach($item_categories as $obj){ 
-                $selected = $category_id == $obj->id ? "selected" : "";
-                $str .= '<option value="' . $obj->id . '" '.$selected.'>' . $obj->item_category .'</option>';    
-            }
-        }
-        echo  $str;
-    }
-    public function get_extra_dropdowns() {
-        error_on();
-        $school_id  = $this->input->post('school_id');
-        $fee_type_id  = $this->input->post('fee_type');
-        $extra_value  = $this->input->post('extra_value');
-        $income_head= $this->ajax->get_single('income_heads',array('id'=>$fee_type_id));	
-        $str = "";
-      
-        if ($fee_type_id && $income_head->head_type == "transport")
-        {
-            $str = '<div class="form-group item">';
-            $str .= '<div>Routes</div>
-                    <select name="route_id" class="form-control col-md-7 col-xs-12">';                        
-            $str .= '<option value="">ALL</option>';
-            $routes = $this->ajax->get_list('routes', array('status'=>1, 'school_id'=>$school_id), '','', '', 'id', 'ASC'); 
-            if(isset($routes) && !empty($routes)){
-                foreach($routes as $obj){ 
-                    $selected = $extra_value == $obj->id ? "selected" : "";
-                    $vehicle = get_vehicle_by_ids($obj->vehicle_ids);
-                    $str .= '<option value="' . $obj->id . '" '.$selected.'>' . $obj->title . '['.$vehicle.']</option>';    
-                }
-            }
-            $str .=' </select></div>';   
-        }
-        else if($fee_type_id && $income_head->head_type == "hostel")
-        {
-            $str = '<div class="form-group item">';
-            $str .= '<div>Hostels</div>
-                    <select name="hostel_id" class="form-control col-md-7 col-xs-12">';                        
-            $str .= '<option value="">ALL</option>';
-            $hostels = get_hostel_by_school($school_id);
-            if(isset($hostels) && !empty($hostels)){
-                foreach($hostels as $hostel){ 
-                    $selected  = $extra_value == $hostel->id  ? "selected" : "";
-                    $str.=' <option value="'.$hostel->id.'" '.$selected.'>'.$hostel->name.' ['.$this->lang->line($hostel->type).']</option>';
-                }
-            }
-            $str .=' </select></div>';        
-        }
-        else
-        {
-            echo "";
-        }
-        echo  $str;
-   }
-
+    
     
     
     

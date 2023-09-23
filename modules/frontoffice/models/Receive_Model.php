@@ -25,7 +25,7 @@ class Receive_Model extends MY_Model {
         else if($this->session->userdata('dadmin') == 1 && $school_id==null){
 			$this->db->where_in('R.school_id', $this->session->userdata('dadmin_school_ids'));
 		}	
-        $this->db->where('(coalesce(R.academic_year_id,0)=S.academic_year_id)');
+        $this->db->where('(coalesce(R.academic_year_id,0)=S.academic_year_id or coalesce(R.academic_year_id,0)=0)');
 
         $this->db->order_by('R.id', 'DESC');
         

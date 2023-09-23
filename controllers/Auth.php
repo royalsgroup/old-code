@@ -50,6 +50,7 @@ class Auth extends CI_Controller {
             $data['password'] = md5($this->input->post('password'));
 
             $login = $this->auth->get_single('users', $data);
+           
             if (!empty($login)) {
               
                 // check user active status
@@ -74,7 +75,7 @@ class Auth extends CI_Controller {
                     }
                 }
                 if($login->role_id == STUDENT ){ 
-                    $student = get_user_by_role(STUDENT, $login->id);  
+                    $student = get_user_by_role(STUDENTd, $login->id);  
                     if ($student->status_type != 'regular')
                     {
                         $this->session->set_flashdata('error', $this->lang->line('invalid_login'));

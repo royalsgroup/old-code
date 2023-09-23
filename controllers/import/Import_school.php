@@ -111,18 +111,18 @@ class Import_school extends MY_Controller {
                     
 					$insert_id = $this->year->insert('schools', $data);
                     $data = array();
-                    $financial_year_id = $this->create_financial_year($insert_id);	
-                    $this->ledgers->insert_default($insert_id,$financial_year_id);
+                    //$financial_year_id = $this->create_financial_year($insert_id);	
+                    //$this->ledgers->insert_default($insert_id,$financial_year_id);
                     // now insert default payscale category 
-                    $this->grade->insert_default($insert_id);
+                    //$this->grade->insert_default($insert_id);
                     // now insert default to vouchers
-                    $this->voucher->insert_default($insert_id,$financial_year_id);
-                    $this->classes->insert_default($insert_id);
-                    $this->subject->insert_default($insert_id);
-                    $data['financial_year_id']= $financial_year_id;
+                    // $this->voucher->insert_default($insert_id,$financial_year_id);
+                    // $this->classes->insert_default($insert_id);
+                    // $this->subject->insert_default($insert_id);
+                    //$data['financial_year_id']= $financial_year_id;
 					$data['school_code']= $this->generate_school_code($insert_id);
-                    $data['academic_year_id'] = $this->create_academic_year($insert_id);	
-					$update_arr['academic_year']=preg_replace('/\D/', '', $$session_start)." - ".preg_replace('/\D/', '', $session_end );
+                    //$data['academic_year_id'] = $this->create_academic_year($insert_id);	
+					//$update_arr['academic_year']=preg_replace('/\D/', '', $$session_start)." - ".preg_replace('/\D/', '', $session_end );
 
                     $this->year->update('schools', $data, array('id' => $insert_id));
 					// create default user as principal

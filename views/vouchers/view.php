@@ -77,6 +77,10 @@ table td{
 											<th width="30%"><?php echo $this->lang->line('financial_year'); ?></th>
 											<td><?php echo $financial_year->session_year; ?></td>
                                         </tr>
+                                        <tr>
+											<th width="30%">Narration</th>
+											<td><?php echo $voucher->narration; ?></td>
+                                        </tr>
                                       
                                 </tbody>
                             </table>  
@@ -105,6 +109,7 @@ table td{
 										<th><?php echo $this->lang->line('head_ledger'); ?></th>
 										<th><?php echo $this->lang->line('dr_cr'); ?></th>
 										<th><?php echo $this->lang->line('total_amount'); ?></th>
+										<th>Narration</th>
                                         <th class='no-print'><?php echo $this->lang->line('action'); ?></th>
                                     </tr>
 									  </thead>
@@ -128,6 +133,7 @@ table td{
 											print number_format($obj->total_amount,2); }
 											?>
 											</td>
+											<td><?php echo $obj->narration; ?></td>
 											<td class='no-print'>
 											<?php if(has_permission(VIEW, 'accounting', 'accounttransactions')){ ?>
                                                         <a href="<?php echo site_url('transactions/view/'.$obj->id); ?>"  class="btn btn-success btn-xs"><i class="fa fa-eye"></i> <?php echo $this->lang->line('view'); ?> </a>

@@ -28,8 +28,6 @@ class Notice_Model extends MY_Model {
 		else if($this->session->userdata('dadmin') == 1 && $school_id==null){
 			$this->db->where_in('S.id', $this->session->userdata('dadmin_school_ids'));
 		}
-        $this->db->where("(N.academic_year_id=S.academic_year_id )");
-
         $this->db->order_by('N.id', 'DESC');
         
         return $this->db->get()->result();

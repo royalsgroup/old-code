@@ -71,6 +71,7 @@
                                         <th><?php echo $this->lang->line('reference'); ?></th>
                                         <th><?php echo $this->lang->line('from'); ?> <?php echo $this->lang->line('title'); ?></th>
                                         <th><?php echo $this->lang->line('receive'); ?> <?php echo $this->lang->line('date'); ?></th>
+                                        <th>Note</th>
                                         <th><?php echo $this->lang->line('action'); ?></th>                                            
                                     </tr>
                                 </thead>
@@ -87,6 +88,7 @@
                                             <td><?php echo $obj->reference; ?></td>
                                             <td><?php echo $obj->from_title; ?></td>
                                             <td><?php echo date($this->global_setting->date_format, strtotime($obj->receive_date)); ?></td>
+                                            <td><?php echo $obj->note; ?></td>
                                             <td>
                                                 <?php if(has_permission(EDIT, 'frontoffice', 'receive')){ ?>
                                                     <a href="<?php echo site_url('frontoffice/receive/edit/'.$obj->id); ?>" class="btn btn-info btn-xs"><i class="fa fa-pencil-square-o"></i> <?php echo $this->lang->line('edit'); ?> </a>
@@ -115,6 +117,21 @@
                                
                                 <?php $this->load->view('layout/school_list_form'); ?> 
                                 
+                                <div class="item form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="to_title">Custom ID <span class="required">*</span></label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <?php 
+                                            $numberD = explode('/', $custom_id);
+                                        ?>
+                                        <span style="float: left;margin-top: 9px;">
+                                            <?php echo $numberD['0'];?>/
+                                            <input type="hidden" name="frontnumber" value="<?php echo $numberD['0'];?>">
+                                        </span>
+                                        <input  class="form-control col-md-7 col-xs-12"  name="custom_id_add"  id="custom_id_add" value="<?php echo $numberD['1'];?>" placeholder="Custom ID" required="required" type="text" autocomplete="off" style="float: left;width: 80%;">
+                                        <div class="help-block"><?php echo form_error('custom_id'); ?></div>
+                                    </div>
+                                </div>
+
                                 <div class="item form-group">
                                     <label class="control-label col-md-3 col-sm-3 col-xs-12" for="to_title"><?php echo $this->lang->line('to'); ?> <?php echo $this->lang->line('title'); ?><span class="required">*</span></label>
                                     <div class="col-md-6 col-sm-6 col-xs-12">
@@ -193,7 +210,22 @@
                                 
                                 <?php $this->load->view('layout/school_list_edit_form'); ?> 
                                 
-                                
+                                <div class="item form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="to_title">Custom ID <span class="required">*</span></label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <?php 
+                                            $numberD = explode('/', $receive->custom_id);
+                                        ?>
+                                        <span style="float: left;margin-top: 9px;">
+                                            <?php echo $numberD['0'];?>/
+                                            <input type="hidden" name="frontnumberedit" value="<?php echo $numberD['0'];?>">
+                                        </span>
+
+                                        <input  class="form-control col-md-7 col-xs-12"  name="custom_id_edit"  id="custom_id_edit" value="<?php echo $numberD['1'] ?>" placeholder="Custom ID" required="required" type="text" autocomplete="off" style="float: left;width: 80%;">
+                                        <div class="help-block"><?php echo form_error('custom_id'); ?></div>
+                                    </div>
+                                </div>
+
                                 <div class="item form-group">
                                     <label class="control-label col-md-3 col-sm-3 col-xs-12" for="to_title"><?php echo $this->lang->line('to'); ?> <?php echo $this->lang->line('title'); ?><span class="required">*</span></label>
                                     <div class="col-md-6 col-sm-6 col-xs-12">

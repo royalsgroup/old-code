@@ -142,6 +142,7 @@ class Profile extends My_Controller {
         if ($_POST) {
             $this->load->library('form_validation');
             $this->form_validation->set_error_delimiters('<div class="error-message" style="color: red;">', '</div>');
+			$this->form_validation->set_rules('current_password', $this->lang->line('password'), 'trim|required|min_length[5]');
             $this->form_validation->set_rules('password', $this->lang->line('password'), 'trim|required|min_length[5]|max_length[12]');
             $this->form_validation->set_rules('conf_password', $this->lang->line('conf_password'), 'trim|required|matches[password]');
 
@@ -150,13 +151,25 @@ class Profile extends My_Controller {
                 $data['temp_password'] = base64_encode($this->input->post('password'));
                 $data['modified_at'] = date('Y-m-d H:i:s');
                 $data['modified_by'] = logged_in_user_id();
+				/************ this is code for Current password check ***********/
+				$this->load->model('Auth_Model', 'auth', true);
+				$data_login['username'] = $this->session->userdata('username');           
+                $data1_login['password'] = md5($this->input->post('current_password'));
+
+                $login = $this->auth->get_single('users', $data1_login);
+				if (empty($login)) {
+				$this->session->set_flashdata('error', $this->lang->line('invalid_current_password'));
+				 redirect('profile/password');
+				}
+				/********** End Of this code ******************/
+				
                 $this->profile->update('users', $data, array('id' => logged_in_user_id()));
                 
                 success($this->lang->line('update_success'));                
                 $profile = $this->profile->get_single('users', array('id' => logged_in_user_id()));
                 
                 create_log('Update Password');
-                redirect('profile');
+                redirect('dashboard');
                
             }
         }

@@ -10,8 +10,8 @@
             </div>
             <div class="x_content quick-link">
                  <span><?php echo $this->lang->line('quick_link'); ?>:</span>                
-                 <a href="<?php echo site_url('profile'); ?>"><?php echo $this->lang->line('my_profile'); ?></a>
-                | <a href="<?php echo site_url('profile/password'); ?>"><?php echo $this->lang->line('reset_password'); ?></a>
+                <!-- <a href="<?php echo site_url('profile'); ?>"><?php echo $this->lang->line('my_profile'); ?></a>
+                | --><a href="<?php echo site_url('profile/password'); ?>"><?php echo $this->lang->line('reset_password'); ?></a>
                 
                 <?php if($this->session->userdata('role_id') == GUARDIAN){ ?>
                 | <a href="<?php echo site_url('guardian/invoice'); ?>"><?php echo $this->lang->line('invoice'); ?></a>
@@ -44,6 +44,14 @@
                                <?php echo form_open(site_url('profile/password'), array('name' => 'add', 'id' => 'add', 'class'=>'form-horizontal form-label-left'), ''); ?>
 
                                 <div class="item form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="password"><?php echo $this->lang->line('current_password'); ?> <span class="required">*</span> </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input  class="form-control col-md-7 col-xs-12"  name="current_password"  id="current_password" value="" placeholder="<?php echo $this->lang->line('current_password'); ?>" required="required" type="password" autocomplete="off">
+                                        <div class="help-block"><?php echo $this->session->flashdata('error'); ?><?php echo form_error('current_password'); ?></div>
+                                    </div>
+                                </div>
+                                
+								<div class="item form-group">
                                     <label class="control-label col-md-3 col-sm-3 col-xs-12" for="password"><?php echo $this->lang->line('password'); ?> <span class="required">*</span> </label>
                                     <div class="col-md-6 col-sm-6 col-xs-12">
                                         <input  class="form-control col-md-7 col-xs-12"  name="password"  id="password" value="" placeholder="<?php echo $this->lang->line('password'); ?>" required="required" type="password" autocomplete="off">
@@ -80,6 +88,10 @@
 $("#add").validate({
         rules: {
         password: {
+            required: true,
+            minlength: 6
+        },
+		current_password: {
             required: true,
             minlength: 6
         },

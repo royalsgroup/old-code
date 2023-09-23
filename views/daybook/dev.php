@@ -150,9 +150,26 @@ $voucher_category = getVoucherCategory();?>
 										<tr>
 											<td><?php print date('d-m-Y',strtotime($t->date)); ?></td>
 											<td style="width:30%;"><strong><?php print $t->ledger_name; ?></strong></td>
-											<td><?php print $t->voucher_name." (".$t->voucher_category.")"; ?></td>											
-											<td><a href='<?php echo site_url('transactions/view/'.$t->id); ?>'><?php print $t->transaction_no; ?></a></td>
-											<td align='right'><?php echo isset($invoice_numbers[$t->invoice_id]) ? '<a href="'.site_url('accounting/invoice/view/'.$t->invoice_id).'" target="_blank">'.$invoice_numbers[$t->invoice_id].'</a>' : (isset($reciept_numbers[$t->donation_id]) ? '<a href="'.site_url('accounting/donation/view/'.$t->invoice_id).'" target="_blank" >'.$reciept_numbers[$t->donation_id].'</a>' : (isset($salary_payments[$t->salary_payment_id]) ? '<a href="'.site_url('payroll/payment/payslip/'.$t->salary_payment_id).'" target="_blank" >'.$salary_payments[$t->salary_payment_id].'</a>' : (isset($inventory_invoices[$t->inventory_id]) ? '<a href="'.site_url($inventory_url[$t->inventory_id].'/view/'.$t->inventory_id).'" target="_blank" >'.$inventory_invoices[$t->inventory_id].'</a>' : ""))); ?></td>
+											<td><?php print $t->voucher_name." (".$t->voucher_category.")"; ?></td>	
+
+
+											<?php $link =  isset($invoice_numbers[$t->invoice_id]) ? '<a href="'.site_url('accounting/invoice/view/'.$t->invoice_id).'" target="_blank">'.$invoice_numbers[$t->invoice_id].'</a>' : (isset($reciept_numbers[$t->donation_id]) ? '<a href="'.site_url('accounting/donation/view/'.$t->invoice_id).'" target="_blank" >'.$reciept_numbers[$t->donation_id].'</a>' : (isset($salary_payments[$t->salary_payment_id]) ? '<a href="'.site_url('payroll/payment/payslip/'.$t->salary_payment_id).'" target="_blank" >'.$salary_payments[$t->salary_payment_id].'</a>' : (isset($inventory_invoices[$t->inventory_id]) ? '<a href="'.site_url($inventory_url[$t->inventory_id].'/view/'.$t->inventory_id).'" target="_blank" >'.$inventory_invoices[$t->inventory_id].'</a>' : ""))); ?>
+
+
+											<td>
+												<?php if(!$link){?>
+												<a href='<?php echo site_url('transactions/view/'.$t->id); ?>'>
+
+													<?php print $t->transaction_no; ?></a>
+
+												<?php } else{ ?>
+
+													<?php print $t->transaction_no; ?>
+												<?php } ?>
+													</td>
+											<td align='right'>
+												<?php echo isset($invoice_numbers[$t->invoice_id]) ? '<a href="'.site_url('accounting/invoice/view/'.$t->invoice_id).'" target="_blank">'.$invoice_numbers[$t->invoice_id].'</a>' : (isset($reciept_numbers[$t->donation_id]) ? '<a href="'.site_url('accounting/donation/view/'.$t->invoice_id).'" target="_blank" >'.$reciept_numbers[$t->donation_id].'</a>' : (isset($salary_payments[$t->salary_payment_id]) ? '<a href="'.site_url('payroll/payment/payslip/'.$t->salary_payment_id).'" target="_blank" >'.$salary_payments[$t->salary_payment_id].'</a>' : (isset($inventory_invoices[$t->inventory_id]) ? '<a href="'.site_url($inventory_url[$t->inventory_id].'/view/'.$t->inventory_id).'" target="_blank" >'.$inventory_invoices[$t->inventory_id].'</a>' : ""))); ?>
+											</td>
 											<td align='right'><strong><?php if($t->head_cr_dr == 'DR') print number_format($t->total_amount,2); else print "&nbsp;"; ?></strong></td>
 											<td align='right'><strong><?php if($t->head_cr_dr == 'CR') print number_format($t->total_amount,2); else print "&nbsp;"; ?></strong></td>
 										</tr>

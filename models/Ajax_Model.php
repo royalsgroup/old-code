@@ -234,6 +234,7 @@ class Ajax_Model extends MY_Model {
           //  $this->db->where('T.salary_grade_id >', 0);
             $this->db->where('T.school_id', $school_id);
             $this->db->where('T.alumni', '0');
+            $this->db->where('T.smc', 'no');
             $this->db->order_by('T.id', 'ASC');
             $teacher= $this->db->get()->result();
             
@@ -248,6 +249,7 @@ class Ajax_Model extends MY_Model {
             //$this->db->where('E.salary_grade_id >', 0);
              $this->db->where('E.school_id', $school_id);
              $this->db->where('E.alumni', '0');
+             $this->db->where('E.smc', 'no');
             $this->db->order_by('E.id', 'ASC');
             $employees=  $this->db->get()->result();
             
@@ -377,18 +379,6 @@ class Ajax_Model extends MY_Model {
         $this->db->where('school_id', $school_id);   
        $this->db->or_where('school_id','0');    
         return $this->db->get()->result(); 
-    }
-    public function get_itemcategory_list($school_id = null, $group_id = null ){        
-        $this->db->select('IC.*');
-        $this->db->from('item_category AS IC');       
-        if($school_id != null){
-            $this->db->where('IC.school_id', $school_id);
-        }
-        if($group_id != null){
-            $this->db->where('IC.group_id', $group_id);
-        }
-        return $this->db->get()->result();
-        
     }
  
 }

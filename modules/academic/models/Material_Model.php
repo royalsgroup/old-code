@@ -9,17 +9,29 @@ class Material_Model extends MY_Model {
         parent::__construct();
     }
     
+     public function get_school($school_id){
+
+        $schoolData = $this->db->query("select * from schools where id ='$school_id'")->row();
+        return $schoolData;
+     }
      public function get_material_list($class_id = null, $school_id = null,$start=null,$limit=null,$search_text='' ){
         
         if(!$class_id){
            $class_id = $this->session->userdata('class_id');
         }
-         
+
+        $schoolData = $this->get_school($school_id);
+        //echo "<pre>";print_r($schoolData);die;
+         $academic_year_id = $schoolData->academic_year_id;
         $this->db->select('SM.*, SC.school_name, C.name AS class_name, S.name AS subject');
         $this->db->from('study_materials AS SM');
         $this->db->join('classes AS C', 'C.id = SM.class_id', 'left');
         $this->db->join('subjects AS S', 'S.id = SM.subject_id', 'left');
         $this->db->join('schools AS SC', 'SC.id = SM.school_id', 'left');
+
+        if($academic_year_id){
+            $this->db->where('SM.academic_year_id', $academic_year_id);
+        }
         
         if($this->session->userdata('role_id') == TEACHER){
             $this->db->group_start();
@@ -67,7 +79,14 @@ class Material_Model extends MY_Model {
         $this->db->join('classes AS C', 'C.id = SM.class_id', 'left');
         $this->db->join('subjects AS S', 'S.id = SM.subject_id', 'left');
         $this->db->join('schools AS SC', 'SC.id = SM.school_id', 'left');
-        
+
+        $schoolData = $this->get_school($school_id);
+        $academic_year_id = $schoolData->academic_year_id;
+        if($academic_year_id){
+            $this->db->where('SM.academic_year_id', $academic_year_id);
+        }
+
+
         if($this->session->userdata('role_id') == TEACHER){
             $this->db->where('S.teacher_id', $this->session->userdata('profile_id'));
         }

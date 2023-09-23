@@ -9,18 +9,28 @@ class Syllabus_Model extends MY_Model {
         parent::__construct();
     }
     
+    public function get_school($school_id){
+
+        $schoolData = $this->db->query("select * from schools where id ='$school_id'")->row();
+        return $schoolData;
+     }
+
      public function get_syllabus_list($class_id = null, $school_id = null,$start=null,$limit=null,$search_text=''){
         
         if(!$class_id){
            $class_id = $this->session->userdata('class_id');
         }
-         
+
+        $schoolData = $this->get_school($school_id);
+        $academic_year_id = $schoolData->academic_year_id;
         $this->db->select('SY.*, SC.school_name, C.name AS class_name, S.name AS subject, AY.session_year');
         $this->db->from('syllabuses AS SY');
         $this->db->join('classes AS C', 'C.id = SY.class_id', 'left');
         $this->db->join('subjects AS S', 'S.id = SY.subject_id', 'left');
         $this->db->join('academic_years AS AY', 'AY.id = SY.academic_year_id', 'left');
         $this->db->join('schools AS SC', 'SC.id = SY.school_id', 'left');
+
+        $this->db->where('SY.academic_year_id',$academic_year_id);
         
         if($this->session->userdata('role_id') == TEACHER){
             $this->db->group_start();
@@ -57,14 +67,17 @@ class Syllabus_Model extends MY_Model {
 		else if($this->session->userdata('role_id') == DISTRICT_ADMIN && $school_id==null){
 			$this->db->where('SC.district_id', $this->session->userdata('district_id'));
 		}	
-        $this->db->where('SY.academic_year_id=SC.academic_year_id');
+        
 
         if ($limit != null && $start != null) {
 			$this->db->limit($limit, $start);
     }	
         $this->db->order_by('SY.id', 'DESC');
        
-        return $this->db->get()->result();
+        $res =  $this->db->get()->result();
+        //  echo $this->db->last_query();
+        // die();
+        return $res ;
         
     }
     public function get_syllabus_list_total($class_id = null, $school_id = null,$search_text=''){
@@ -72,14 +85,17 @@ class Syllabus_Model extends MY_Model {
         if(!$class_id){
            $class_id = $this->session->userdata('class_id');
         }
-         
+
+        $schoolData = $this->get_school($school_id);
+        $academic_year_id = $schoolData->academic_year_id;
         $this->db->select('SY.*, SC.school_name, C.name AS class_name, S.name AS subject, AY.session_year');
         $this->db->from('syllabuses AS SY');
         $this->db->join('classes AS C', 'C.id = SY.class_id', 'left');
         $this->db->join('subjects AS S', 'S.id = SY.subject_id', 'left');
         $this->db->join('academic_years AS AY', 'AY.id = SY.academic_year_id', 'left');
         $this->db->join('schools AS SC', 'SC.id = SY.school_id', 'left');
-        
+            
+        $this->db->where('SY.academic_year_id',$academic_year_id);
         if($this->session->userdata('role_id') == TEACHER){
             $this->db->where('S.teacher_id', $this->session->userdata('profile_id'));
         }
@@ -107,7 +123,7 @@ class Syllabus_Model extends MY_Model {
 		else if($this->session->userdata('role_id') == DISTRICT_ADMIN && $school_id==null){
 			$this->db->where('SC.district_id', $this->session->userdata('district_id'));
 		}	
-        $this->db->where('SY.academic_year_id=SC.academic_year_id');
+        
 
         $this->db->order_by('SY.id', 'DESC');
        

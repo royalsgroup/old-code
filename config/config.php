@@ -24,7 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 
-$config['base_url'] =  'http://www.vbrajasthan.in';
+$config['base_url'] =  'http://school.ienet.in';
 
 // example
 // $config['base_url'] =  'http://school.vivaindia.com';

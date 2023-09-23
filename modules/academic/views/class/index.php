@@ -57,7 +57,7 @@
                                         <?php } ?>
                                         <th><?php echo $this->lang->line('class'); ?></th>
                                         <th><?php echo $this->lang->line('numeric'); ?> <?php echo $this->lang->line('name'); ?></th>
-                                        <th><?php echo $this->lang->line('class'); ?> <?php echo $this->lang->line('teacher'); ?></th>
+                                        <!-- <th><?php //echo $this->lang->line('class'); ?> <?php //echo $this->lang->line('teacher'); ?></th> -->
                                   <th><?php echo $this->lang->line('class'); ?> <?php echo $this->lang->line('discipline'); ?></th>                                
                                         <th><?php echo $this->lang->line('action'); ?></th>  
                                     </tr>
@@ -81,7 +81,7 @@
                                             <?php } ?>
                                             <td><?php echo $obj->name; ?></td>
                                             <td><?php echo $obj->numeric_name; ?></td>
-                                            <td><?php echo $obj->teacher; ?></td> 
+                                            <!-- <td><?php //echo $obj->teacher; ?></td> --> 
                                              <td><?php echo $obj->discipline_name; ?></td>                                           
                                             <td>
                                             
@@ -150,19 +150,19 @@
                                     </div>
                                 </div>
                                 
-                                <div class="item form-group">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="teacher_id"><?php echo $this->lang->line('class'); ?> <?php echo $this->lang->line('teacher'); ?> 
+                               <!--  <div class="item form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="teacher_id"><?php //echo $this->lang->line('class'); ?> <?php //echo $this->lang->line('teacher'); ?> 
                                     </label>
                                     <div class="col-md-6 col-sm-6 col-xs-12">
                                         <select  class="form-control col-md-7 col-xs-12"  name="teacher_id"  id="add_teacher_id"  >
-                                            <option value="">--<?php echo $this->lang->line('select'); ?>--</option> 
-                                            <?php foreach($teachers as $obj ){ ?>
-                                            <option value="<?php echo $obj->id; ?>" <?php echo isset($post['teacher_id']) && $post['teacher_id'] == $obj->id ?  'selected="selected"' : ''; ?>><?php echo $obj->name; ?></option>
-                                            <?php } ?>                                            
+                                            <option value="">--<?php //echo $this->lang->line('select'); ?>--</option> 
+                                            <?php //foreach($teachers as $obj ){ ?>
+                                            <option value="<?php //echo $obj->id; ?>" <?php //echo isset($post['teacher_id']) && $post['teacher_id'] == $obj->id ?  'selected="selected"' : ''; ?>><?php //echo $obj->name; ?></option>
+                                            <?php //} ?>                                            
                                         </select>
-                                        <div class="help-block"><?php echo form_error('teacher_id'); ?></div>
+                                        <div class="help-block"><?php //echo form_error('teacher_id'); ?></div>
                                     </div>
-                                </div>
+                                </div> -->
                                                             
                                 
                                 <div class="item form-group">
@@ -214,19 +214,19 @@
                                     </div>
                                 </div>
                                 
-                                <div class="item form-group">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="teacher_id"><?php echo $this->lang->line('class'); ?>  <?php echo $this->lang->line('teacher'); ?> 
+                                <!-- <div class="item form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="teacher_id"><?php //echo $this->lang->line('class'); ?>  <?php //echo $this->lang->line('teacher'); ?> 
                                     </label>
                                     <div class="col-md-6 col-sm-6 col-xs-12">
                                         <select  class="form-control col-md-7 col-xs-12"  name="teacher_id"  id="edit_teacher_id"  >
-                                            <option value="">--<?php echo $this->lang->line('select'); ?>--</option> 
-                                            <?php foreach($teachers as $obj ){ ?>
-                                            <option value="<?php echo $obj->id; ?>" <?php if($class->teacher_id == $obj->id){ echo 'selected="selected"';} ?> ><?php echo $obj->name; ?></option>
-                                            <?php } ?>                                            
+                                            <option value="">--<?php //echo $this->lang->line('select'); ?>--</option> 
+                                            <?php //foreach($teachers as $obj ){ ?>
+                                            <option value="<?php //echo $obj->id; ?>" <?php //if($class->teacher_id == $obj->id){ echo 'selected="selected"';} ?> ><?php //echo $obj->name; ?></option>
+                                            <?php //} ?>                                            
                                         </select>
-                                        <div class="help-block"><?php echo form_error('teacher_id'); ?></div>
+                                        <div class="help-block"><?php //echo form_error('teacher_id'); ?></div>
                                     </div>
-                                </div>
+                                </div> -->
 
 
                                 <div class="item form-group">

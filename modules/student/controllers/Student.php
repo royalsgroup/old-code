@@ -260,7 +260,7 @@ $transferselected='';
 								   $transferselected="selected='selected'";
 							   } 							   
                           $action .= '<select  class="form-control col-md-7 col-xs-12 status-type"  name="status_type"  id="status_type" onchange="update_status_type('.$obj->id.', this.value);"><option value="regular" '.$selected.'>'.$this->lang->line('regular').'</option><option value="drop" '.$dropselected.'>'.$this->lang->line('drop').'</option>';
-						  $action.='<option value="transfer" '.$transferselected.'>'. $this->lang->line('transfer').'</option>                  <option value="passed" '.$passedselected.'>'.$this->lang->line('passed').'</option> </select>';
+						  $action.='<option value="transfer" '.$transferselected.'>'. $this->lang->line('transfer').'</option> </select>';
                                                 }   
                      if(has_permission(EDIT, 'student', 'student')){
 						 $sr='<input type="checkbox" class="delete_check" name="checkId[]" value="'. $obj->id.'"  />';

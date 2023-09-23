@@ -17,47 +17,15 @@ class Item extends MY_Controller
      public function index($school_id = null) {
        
         //check_permission(VIEW);
-        $category_id  = $this->input->post('category_id');
-        $group_id  = $this->input->post('group_id');
+		$this->data['items'] = $this->item->get_list($school_id);
 		if($this->session->userdata('role_id') != SUPER_ADMIN){            
             $school_id=$this->session->userdata('school_id');                    
 			$condition['school_id'] = $school_id;
 			$condition['is_active']='yes';
 			$this->data['itemcategories'] = $this->item->get_list('item_category', $condition, '','', '', 'id', 'ASC');
         }   
-        if($school_id != null)
-        {
-            $this->data['item_groups'] = $this->item->get_itemgroup_list($school_id);
-        }
-        $financial_year=$this->item->get_single('financial_years',array('school_id'=>$school_id,'is_running'=>1));	
-        $check_financial_year=$this->item->get_single('financial_years',array('school_id'=>$school_id,'previous_financial_year_id'=> $financial_year->id));	         
-		if(strpos($financial_year->session_year,"->"))	
-        {
-            $arr=explode("->",$financial_year->session_year);
-            $f_start=date("Y-m-d",strtotime($arr[0]));		
-            $f_end=date("Y-m-d",strtotime($arr[1]));	
-        }
-        else
-        {
-			$arr=explode("-",$financial_year->session_year);
-            $date_exploded = explode(" ",$arr[0]);
-            if(count($date_exploded)>2)
-            {
-                $f_start=date("Y-m-d",strtotime($arr[0]));		
-                $f_end=date("Y-m-d",strtotime($arr[1]));	
-            }
-            else
-            {
-                $f_start=date("Y-m-d",strtotime("1 ".$arr[0]));		
-                $f_end=date("Y-m-d",strtotime("31 ".$arr[1]));	
-            }
-        }
-        $financial_start_date = $f_start;
-		$financial_end_date = $f_end;
-        $this->data['items'] = $this->item->get_item_list($school_id, $category_id, $group_id, $financial_start_date, $financial_end_date );
+        
 
-        $this->data['category_id'] = $category_id;     
-        $this->data['group_id'] = $group_id;     
         $this->data['filter_school_id'] = $school_id;     
 		$this->data['schools'] = $this->schools;	
         //$this->data['itemstores'] = $this->itemstore->get_list('item_store', array(), '','', '', 'id', 'ASC');

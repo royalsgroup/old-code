@@ -36,6 +36,7 @@ class Receive extends MY_Controller {
         
         check_permission(VIEW);        
         $this->data['receives'] = $this->receive->get_receive($school_id); 
+        $this->data['custom_id'] = $this->receive->generate_custom_id($school_id);
         $this->data['filter_school_id'] = $school_id;
         $this->data['schools'] = $this->schools;
         $this->data['list'] = TRUE;
@@ -195,9 +196,16 @@ class Receive extends MY_Controller {
         if ($this->input->post('id')) {
             $data['modified_at'] = date('Y-m-d H:i:s');
             $data['modified_by'] = logged_in_user_id();
+            if($this->input->post('custom_id_edit')){
+                $data['custom_id'] =$this->input->post('frontnumberedit').'/'.$this->input->post('custom_id_edit');
+            }
         } else {
             $school = $this->receive->get_school_by_id($data['school_id']);
-            $data['custom_id'] =$this->receive->generate_custom_id($data['school_id']);
+            if($this->input->post('custom_id_add')){
+                $data['custom_id'] =$this->input->post('frontnumber').'/'.$this->input->post('custom_id_add');
+            }else{
+                $data['custom_id'] =$this->receive->generate_custom_id($data['school_id']);
+            }
             $data['academic_year_id'] = $school->academic_year_id;
             $data['created_at'] = date('Y-m-d H:i:s');
             $data['created_by'] = logged_in_user_id();

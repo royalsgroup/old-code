@@ -21,7 +21,7 @@ class Notice extends MY_Controller {
         parent::__construct();
         $this->load->model('Notice_Model', 'notice', true);    
         $this->load->library('message/message');
-        error_on();
+    
     }
 
     
@@ -42,8 +42,7 @@ class Notice extends MY_Controller {
         
         $this->data['filter_school_id'] = $school_id;
         $this->data['schools'] = $this->schools;
-        $notice_id = $this->input->get('notice_id');
-        $this->data['notice_id'] =  $notice_id;
+        
         $this->data['list'] = TRUE;
         $this->layout->title($this->lang->line('manage_notice') . ' | ' . SMS);
         $this->layout->view('notice/index', $this->data);
@@ -277,8 +276,7 @@ class Notice extends MY_Controller {
             $data['created_at'] = date('Y-m-d H:i:s');
             $data['created_by'] = logged_in_user_id();
         }
-        $school = $this->notice->get_school_by_id($data['school_id']);
-        $data['academic_year_id'] = $school->academic_year_id;
+
         return $data;
     }
 

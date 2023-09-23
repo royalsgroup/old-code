@@ -35,8 +35,11 @@ class Grade extends MY_Controller {
     public function index($school_id = null ) {
 
         check_permission(VIEW);
-       
-        $this->data['grades'] = $this->grade->get_garde_list($school_id);
+        $school_id = $this->session->userdata('school_id');
+         $school = $this->grade->get_school_by_id($school_id);
+         //echo "<pre>";print_r($school);die;
+        //$this->data['grades'] = $this->grade->get_garde_list($school_id);
+        $this->data['grades'] = $this->grade->get_all_garde_list($school_id,@$school->academic_year_id);
 
         $this->data['filter_school_id'] = $school_id;
         
@@ -58,12 +61,13 @@ class Grade extends MY_Controller {
     public function add() {
 
         check_permission(ADD);
-
+        $school_id = $this->session->userdata('school_id');
         if ($_POST) {
             $this->_prepare_grade_validation();
             if ($this->form_validation->run() === TRUE) {
                 $data = $this->_get_posted_grade_data();
-
+                $school = $this->grade->get_school_by_id($school_id);
+                $data['academic_year_id'] = $school->academic_year_id;
                 $insert_id = $this->grade->insert('grades', $data);
                 if ($insert_id) {
                     

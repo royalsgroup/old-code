@@ -136,7 +136,7 @@
                                         <th><?php echo $this->lang->line('gender'); ?></th>
                                         <th><?php echo $this->lang->line('caste'); ?></th>
                                         <th><?php echo $this->lang->line('action'); ?>
-                                        <button class="btn btn-sm btn-primary " type="button" id="bulk_pass_button" >Bulk Pass</button>
+                                        <button class="btn btn-sm btn-primary " type="button" id="bulk_pass_button" >Bulk Alumni</button>
                                     </th>                                           
                                     </tr>
                                 </thead>
@@ -1548,7 +1548,7 @@
                                                 <option value="regular" <?php echo $student->status_type == 'regular' ?  'selected="selected"' : ''; ?>><?php echo $this->lang->line('regular'); ?></option>
                                                 <option value="drop" <?php echo $student->status_type == 'drop' ?  'selected="selected"' : ''; ?>><?php echo $this->lang->line('drop'); ?></option>
                                                 <option value="transfer" <?php echo $student->status_type == 'transfer' ?  'selected="selected"' : ''; ?>><?php echo $this->lang->line('transfer'); ?></option>
-                                                <option value="passed" <?php echo $student->status_type == 'passed' ?  'selected="selected"' : ''; ?>><?php echo $this->lang->line('passed'); ?></option>
+                                                <!-- <option value="passed" <?php //echo $student->status_type == 'passed' ?  'selected="selected"' : ''; ?>><?php //echo $this->lang->line('passed'); ?></option> -->
                                             </select>
                                             <div class="help-block"><?php echo form_error('status_type'); ?></div>
                                          </div>

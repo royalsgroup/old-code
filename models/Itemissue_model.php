@@ -39,36 +39,20 @@ class Itemissue_model extends MY_Model {
     //         }
     //         return $query->result_array();
     // }
-    public function get($id = null,$school_id = null,$invoice_id = null, $voucher_id = null, $start_date = null , $end_date = null) {
+    public function get($id = null,$school_id = null,$invoice_id = null) {
 
-        $schoolselect = $school_id ? " " : " schools.school_name,";
-        if ($id )
-        {
-            $this->db->select( $schoolselect .'item_issue.*,item.name as `item_name`,`item`.`item_code`,item.item_category_id,item_category.item_category, AT.transaction_no, AT.id as transaction_id,IN.invoice_no
-            ,AL1.name as debit_ledger
-            ,AL2.name as credit_ledger')->from('item_issue');
-        }
-        else
-        {
-            // $this->db->select('schools.school_name,item_issue.*,item.name as `item_name`,`item`.`item_code`,item.item_category_id,item_category.item_category,IN.invoice_no
-            // ,AL1.name as debit_ledger
-            // ,AL2.name as credit_ledger')->from('item_issue');
-            $this->db->select( $schoolselect .'item_issue.*,item.name as `item_name`,`item`.`item_code`,item.item_category_id,item_category.item_category,IN.invoice_no')->from('item_issue');
-        }
-        if (!$school_id)
-        {
-            $this->db->join('schools ', 'schools.id = item_issue.school_id');
-        }
+        $this->db->select('schools.school_name,item_issue.*,item.name as `item_name`,`item`.`item_code`,item.item_category_id,item_category.item_category, AT.transaction_no, AT.id as transaction_id,IN.invoice_no
+        ,(select name from account_ledgers where id=item_issue.debit_ledger_id) as debit_ledger
+        ,(select name from account_ledgers where id=item_issue.credit_ledger_id) as credit_ledger
+        ')->from('item_issue');
+		$this->db->join('schools ', 'schools.id = item_issue.school_id');
         $this->db->join('item ', 'item.id = item_issue.item_id');
         $this->db->join('item_category', 'item.item_category_id = item_category.id');
+        $this->db->join('account_transactions AT', 'item_issue.account_transaction_id = AT.id');
         $this->db->join('item_invoices IN', 'item_issue.invoice_id =  IN.id');
-        if ($id )
-        {
-            $this->db->join('account_transactions AT', 'item_issue.account_transaction_id = AT.id');
-            $this->db->join('account_ledgers AL1', 'item_issue.debit_ledger_id = AL1.id');        
-            $this->db->join('account_ledgers AL2', 'item_issue.credit_ledger_id = AL2.id'); 
-        }
-         
+
+        
+        
 		 if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdata('role_id') != DISTRICT_ADMIN){
             $this->db->where('item_issue.school_id', $this->session->userdata('school_id'));
         }
@@ -91,14 +75,6 @@ class Itemissue_model extends MY_Model {
         if($invoice_id)
         {
             $this->db->where('item_issue.invoice_id', $invoice_id);
-        }
-        if($voucher_id)
-        {
-            $this->db->where('item_issue.voucher_id', $voucher_id);
-        }
-        if($start_date && $end_date)
-        {
-            $this->db->where("DATE(item_issue.created_at) BETWEEN '$start_date' AND '$end_date'");
         }
          $query = $this->db->get();
         // echo $this->db->last_query();

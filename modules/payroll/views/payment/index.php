@@ -78,7 +78,7 @@
                     <div class="col-md-2 col-sm-2 col-xs-12">
                         <div class="item form-group">
                             <label for="salary_month">Payment <?php echo $this->lang->line('date'); ?> </label>
-                            <input class="form-control col-md-7 col-xs-12 " name="payment_date" id="payment_date" value="<?php print (isset($payment_date)) ? $payment_date : ''; ?>" placeholder="<?php echo $this->lang->line('date'); ?>" type="text" autocomplete="off">
+                            <input class="form-control col-md-7 col-xs-12 " name="payment_date" id="payment_date" value="<?php print (isset($payment_date)) ? $payment_date : $todayDate; ?>" placeholder="<?php echo $this->lang->line('date'); ?>" type="text" autocomplete="off" readonly>
                             <div class="help-block"><?php echo form_error('payment_date'); ?></div>
                         </div>
                     </div>
@@ -966,11 +966,11 @@
         startDate: '<?php print $a_start_date; ?>',
 		endDate:'<?php print $a_end_date; ?>',
     });
-    $("#payment_date").datepicker({
-        format: "yyyy-mm-dd",
-        startDate: '<?php print $f_start_date; ?>',
-		endDate:'<?php print $f_end_date; ?>',
-    });
+    // $("#payment_date").datepicker({
+    //     format: "yyyy-mm-dd",
+    //     startDate: '<?php print $f_start_date; ?>',
+	// 	endDate:'<?php print $f_end_date; ?>',
+    // });
 
     
     $(".edit_salary_month").datepicker({

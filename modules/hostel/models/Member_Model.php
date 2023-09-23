@@ -33,9 +33,7 @@ class Member_Model extends MY_Model {
             $this->db->where('HM.id>0');
         }
         else {
-            $this->db->where("not exists( select id from hostel_members HM where HM.user_id = ST.user_id and (HM.academic_year_id=$academic_year_id or coalesce(HM.academic_year_id,0)=0) )");
-
-            // $this->db->where('coalesce(HM.id,0)=0');
+            $this->db->where('coalesce(HM.id,0)=0');
         }
 
 
@@ -62,45 +60,6 @@ class Member_Model extends MY_Model {
         
         return $this->db->get()->result();
     }
-    public function get_hostel_non_member_list($school_id = null, $academic_year_id = null ,$limit =null,$start=null,$search_text= null) {
-
-        if(!$school_id){
-            return;
-        }
-        
-        $this->db->select('ST.*,SC.school_name,  E.roll_no, C.name AS class_name, S.name AS section');
-        $this->db->from('enrollments AS E');
-        $this->db->join(' students AS ST', 'E.student_id = ST.id', 'left');
-        $this->db->join('classes AS C', 'C.id = E.class_id', 'left');
-        $this->db->join('sections AS S', 'S.id = E.section_id', 'left');
-        $this->db->join('schools AS SC', 'SC.id = ST.school_id', 'left');
-        
-       
-        // $this->db->where('ST.is_hostel_member', $is_hostel_member);
-        if($academic_year_id){
-            $this->db->where('E.academic_year_id', $academic_year_id);
-        }
-        $this->db->where("not exists( select id from hostel_members HM where HM.user_id = ST.user_id and (HM.academic_year_id=$academic_year_id or coalesce(HM.academic_year_id,0)=0) )");
-            // $this->db->where('coalesce(HM.id,0)=0');
-
-        if($school_id ){
-            $this->db->where('ST.school_id', $school_id);
-        }
-        if($this->session->userdata('role_id') == TEACHER ){
-            $this->db->where('C.teacher_id', $this->session->userdata('profile_id'));
-        }
-        $this->db->where('ST.status_type','regular');
-        if($search_text!=''){
-			$this->db->like('ST.name ', $search_text);
-		}  
-       
-        $this->db->group_by('E.student_id', 'DESC');
-        if ($limit != null && $start != null) {
-			$this->db->limit($limit, $start);
-    }
-        
-        return $this->db->get()->result();
-    }
     public function check_hostel_member($user_id,$school_id,$academic_year_id ) {
         $this->db->select('ST.id,E.academic_year_id,HM.user_id');
         $this->db->from('hostel_members AS HM');
@@ -108,61 +67,10 @@ class Member_Model extends MY_Model {
         $this->db->join('enrollments AS E', 'E.student_id = ST.id', 'left');
         $this->db->where('ST.school_id', $school_id);
         $this->db->where('E.academic_year_id', $academic_year_id);
-        if($academic_year_id){
-            $this->db->where("(HM.academic_year_id=$academic_year_id or coalesce(HM.academic_year_id,0)=0)");
-            $this->db->where('E.academic_year_id', $academic_year_id);
-        }
         $this->db->where('ST.is_hostel_member', 1);
         
         $this->db->where('HM.user_id', $user_id);
         return $this->db->get()->result();
-    }
-    public function get_hostel_non_member_list_total($school_id = null, $academic_year_id = null,$search_text=null ) {
-
-        if(!$school_id){
-            return;
-        }
-        
-        $this->db->select('ST.*,SC.school_name, C.name AS class_name, S.name AS section');
-        $this->db->from('enrollments AS E');
-        $this->db->join('students AS ST', 'E.student_id = ST.id', 'left');
-        $this->db->join('classes AS C', 'C.id = E.class_id', 'left');
-        $this->db->join('sections AS S', 'S.id = E.section_id', 'left');
-        $this->db->join('schools AS SC', 'SC.id = ST.school_id', 'left');
-        $this->db->where('ST.status_type','regular');
-      
-        $this->db->where("not exists( select id from hostel_members HM where HM.user_id = ST.user_id and (HM.academic_year_id=$academic_year_id or coalesce(HM.academic_year_id,0)=0) )");
-
-        if($academic_year_id){
-            $this->db->where('E.academic_year_id', $academic_year_id);
-        }
-        // $this->db->where('ST.is_hostel_member', $is_hostel_member);
-        
-        if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdata('dadmin') != 1){
-            $this->db->where('ST.school_id', $this->session->userdata('school_id'));
-        }
-        if($this->session->userdata('role_id') == SUPER_ADMIN && $school_id){
-            $this->db->where('ST.school_id', $school_id);
-        }     
-        if($this->session->userdata('role_id') == TEACHER ){
-            $this->db->where('C.teacher_id', $this->session->userdata('profile_id'));
-        }
-        if($this->session->userdata('dadmin') == 1 && $school_id){
-            $this->db->where('ST.school_id', $school_id);
-        }
-		else if($this->session->userdata('dadmin') == 1 && $school_id==null){
-			$this->db->where_in('SC.id', $this->session->userdata('dadmin_school_ids'));
-		}		
-        
-        if($search_text!=''){
-			$this->db->like('ST.name ', $search_text);
-		}      
-       
-            $this->db->group_by('E.student_id', 'DESC');
-        
-        $result=$this->db->get()->num_rows();
-		
-		return $result;
     }
     public function get_hostel_member_list_total($is_hostel_member = 1, $school_id = null, $academic_year_id = null,$search_text=null ) {
 
@@ -191,7 +99,7 @@ class Member_Model extends MY_Model {
             $this->db->where("(HM.academic_year_id=$academic_year_id or coalesce(HM.academic_year_id,0)=0)");
             $this->db->where('E.academic_year_id', $academic_year_id);
         }
-        // $this->db->where('ST.is_hostel_member', $is_hostel_member);
+        $this->db->where('ST.is_hostel_member', $is_hostel_member);
         
         if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdata('dadmin') != 1){
             $this->db->where('ST.school_id', $this->session->userdata('school_id'));

@@ -38,11 +38,11 @@ class News extends MY_Controller {
     public function index($school_id = null) {
         
         check_permission(VIEW);
-        $news_id = $this->input->get('news_id');
+
         $this->data['news_list'] = $this->news->get_news_list($school_id); 
         $this->data['filter_school_id'] = $school_id;
         $this->data['schools'] = $this->schools;
-        $this->data['news_id'] =  $news_id;
+        
         $this->data['list'] = TRUE;
         $this->layout->title( $this->lang->line('manage_news'). ' | ' . SMS);
         $this->layout->view('news/index', $this->data);            
@@ -308,8 +308,6 @@ class News extends MY_Controller {
             $data['created_at'] = date('Y-m-d H:i:s');
             $data['created_by'] = logged_in_user_id();                       
         }
-        $school = $this->news->get_school_by_id($data['school_id']);
-        $data['academic_year_id'] = $school->academic_year_id;
         
         if(isset($_FILES['image']['name'])){  
             $data['image'] =  $this->_upload_image();

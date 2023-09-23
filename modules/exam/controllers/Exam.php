@@ -57,9 +57,11 @@ class Exam extends MY_Controller {
 
         // check_permission(VIEW);
             
+        $school_id = $this->session->userdata('school_id');
         $school = $this->exam->get_school_by_id($school_id);
-        
-        $this->data['exams'] = $this->exam->get_exam_list($school_id, @$school->academic_year_id);
+        //echo "<pre>";print_r($school);die;
+        //$this->data['exams'] = $this->exam->get_exam_list($school_id, @$school->academic_year_id);
+        $this->data['exams'] = $this->exam->get_all_exam_list($school_id, @$school->academic_year_id);
         
         $this->data['filter_school_id'] = $school_id;        
         $this->data['schools'] = $this->schools;

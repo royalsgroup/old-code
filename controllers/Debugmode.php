@@ -16,8 +16,6 @@ class Debugmode extends MY_Controller
     }
     public function copy_schedules($to_school_id, $from_school_id =71, $auto = 0)
     {
-        die("off");
-
         if($from_school_id ==0) $from_school_id  = 71;
         $this->load->model('Exam/Schedule_Model', 'schedule', true);
         $from_school =  $this->schedule->get_school_by_id($from_school_id);
@@ -161,8 +159,6 @@ class Debugmode extends MY_Controller
 
     }
     public function copy_grades($to_school_id, $from_school_id =71,  $auto =0) {
-        die("off");
-
         if($from_school_id ==0) $from_school_id  = 71;
         $this->load->model('Exam/Schedule_Model', 'schedule', true);
         $from_school =  $this->schedule->get_school_by_id($from_school_id);
@@ -188,8 +184,6 @@ class Debugmode extends MY_Controller
 
     }
     public function update_schools_data() {
-        die("off");
-
         $school = $this->application->get_single('schools',array("copy_schedule"=>2));
         if(empty( $school ))
         {
@@ -202,19 +196,13 @@ class Debugmode extends MY_Controller
         }
     }
     public function disable_copy_schedule() {
-        die("off");
-
         $this->application->update('schools',array("copy_schedule"=>0));
     }
     public function enable_copy_schedule() {
-        die("off");
-
         $this->application->update('schools',array("copy_schedule"=>1), array('1'=>1));
     }
     public function create_new_ledgers($school_id)
     {
-        die("off");
-
         error_on();
         $data = array();
         $data['school_id'] = $school_id;
@@ -377,25 +365,17 @@ class Debugmode extends MY_Controller
     }
     
     public function enable_copy_schedule_school($school_id) {
-        die("off");
-
         $this->application->update('schools',array("copy_schedule"=>1), array('id'=>$school_id ));
     }
     public function enable_ayc_school($school_id) {
-        die("off");
-
         $this->application->update('schools',array("create_academic_year"=>1), array('id'=>$school_id ));
         $school = $this->application->get_single('schools', array('status'=>1, 'id'=>$school_id));
         redirect("dashboard/index");
     }
     public function enable_ayc_all() {
-        die("off");
-
         $this->application->update('schools',array("create_academic_year"=>1), array('1'=>1 ));
     }
     public function set_ayc_school($school_id) {
-        die("off");
-
         $this->application->update('schools',array("create_academic_year"=>2), array('id'=>$school_id ));
     }
     public function check_ayc($school_id) {
@@ -435,8 +415,6 @@ class Debugmode extends MY_Controller
     public function test1()
     {
 
-        die("off");
-
         $school_id  = $_GET['shcool_id'] ?? 576;
         $admin_users = $this->application->get_admins($school_id);
         $school_id  = $_GET['shcool_id2'] ?? 202;
@@ -456,8 +434,6 @@ class Debugmode extends MY_Controller
 
     public function index($school_id = null)
     {	
-        die("off");
-
         $common_tables = array("account_base","account_ledger_details","account_transactions","account_transaction_details","account_types","blocks","districts","employee_employment_types");
         $tables=$this->db->query("SELECT t.TABLE_NAME AS table_name FROM INFORMATION_SCHEMA.TABLES AS t WHERE t.TABLE_SCHEMA = 'admin_vbr' ")->result_array();    
         foreach($tables as $key => $val) {
@@ -489,8 +465,6 @@ class Debugmode extends MY_Controller
 
     public function checkebalance($school_id = 1545)
     {
-        die("off");
-
 
         $this->load->model('Accountledgers_Model', 'accountledgers', true);			
 		$this->load->model('Accountgroups_Model', 'accountgroups', true);	
@@ -530,7 +504,6 @@ class Debugmode extends MY_Controller
     }
     public function uodate_financial_year_id($school_id = 1545)
     {
-        die("off");
 
         $this->load->model('Accountledgers_Model', 'accountledgers', true);			
         $school = $this->accountledgers->get_school_by_id($school_id);
@@ -755,7 +728,7 @@ class Debugmode extends MY_Controller
     {
         $this->load->model('administrator/Financialyear_Model', 'year', true);
         $school_id = $this->session->userdata('school_id');   
-        if($school_id && 1==0)
+        if($school_id)
         {
             $this->year->update('schools', array("import_data"=>1), array('id' => $school_id));
         }

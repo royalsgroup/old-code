@@ -386,7 +386,7 @@
                             has_permission(VIEW, 'card', 'teacher') ||
                             has_permission(VIEW, 'card', 'employee') ||
                             has_permission(VIEW, 'card', 'student') ||
-                            has_permission(VIEW, 'card', 'admit') 
+                            has_permission(VIEW, 'card', 'admit')
                             ){ ?> 
                     
                             <li><a ><i class="fa fa-group"></i> <?php echo $this->lang->line('student'); ?> </a>
@@ -404,8 +404,7 @@
                                         has_permission(VIEW, 'card', 'teacher') ||
                                         has_permission(VIEW, 'card', 'employee') ||
                                         has_permission(VIEW, 'card', 'student') ||
-                                        has_permission(VIEW, 'card', 'admit') ||
-                                        has_permission(VIEW, 'attendance', 'student')  
+                                        has_permission(VIEW, 'card', 'admit')
                                         ){ ?> 
                                     
                                     <?if($this->session->userdata('role_id') == STUDENT){ ?>
@@ -435,19 +434,10 @@
                                                 <?php if(has_permission(VIEW, 'student', 'activity')){ ?>
                                                 <li><a href="<?php echo site_url('student/activity/index'); ?>"> <?php echo $this->lang->line('student'); ?> <?php echo $this->lang->line('activity'); ?></a></li>
                                                 <?php } ?> 
-                                                <?php if(has_permission(VIEW, 'student', 'activity')){ ?>
-                                                <li><a href="<?php echo site_url('report/sattendance'); ?>"> <?php echo $this->lang->line('student'); ?> <?php echo $this->lang->line('attendence'); ?> <?php echo $this->lang->line('report'); ?><</a></li>
-                                                <?php } if(has_permission(VIEW, 'attendance', 'student')){ ?>                                    
-                                                <?php if($this->session->userdata('role_id') == GUARDIAN){ ?>
-                                                <li><a href="<?php echo site_url('attendance/student/guardian'); ?>"><?php echo $this->lang->line('student'); ?> <?php echo $this->lang->line('attendance'); ?></a></li>
-                                                <?php } else{ ?>   
-                                                <li><a href="<?php echo site_url('attendance/student'); ?>"><?php echo $this->lang->line('student'); ?> <?php echo $this->lang->line('attendance'); ?></a></li>
-                                            <?php } ?>   
-                                        <?php } ?>
                                                 <?php if(has_permission(VIEW, 'guardian', 'guardian')){ ?>    
                                     <li><a href="<?php echo site_url('guardian/index/'); ?>"><?php echo $this->lang->line('guardian'); ?></a> </li>
                                 <?php } ?>
-                                        </ul>   
+                                        </ul>
                                     </li>   
                                         
                                     <?php }else{ ?>    
@@ -472,13 +462,6 @@
                                                 <?php if(has_permission(ADD, 'student', 'activity')){ ?>
                                                 <li><a href="<?php echo site_url('student/activity/index'); ?>"> <?php echo $this->lang->line('student'); ?> <?php echo $this->lang->line('activity'); ?></a></li>
                                                 <?php } ?>       
-                                                <?php if(has_permission(VIEW, 'report', 'sattendance')){ ?>
-                                                <li><a href="<?php echo site_url('report/sattendance'); ?>"> <?php echo $this->lang->line('student'); ?> <?php echo $this->lang->line('attendence'); ?> <?php echo $this->lang->line('report'); ?></a></li>
-                                                <?php } if($this->session->userdata('role_id') == GUARDIAN){ ?>
-                                                <li><a href="<?php echo site_url('attendance/student/guardian'); ?>"><?php echo $this->lang->line('student'); ?> <?php echo $this->lang->line('attendance'); ?></a></li>
-                                                <?php } else{ ?>   
-                                                <li><a href="<?php echo site_url('attendance/student'); ?>"><?php echo $this->lang->line('student'); ?> <?php echo $this->lang->line('attendance'); ?></a></li>
-                                            <?php } ?> 
                                                     
                                             </ul>
                                         </li> 
@@ -716,10 +699,10 @@
 							<?php } ?>
 							</ul>
 							</li>
-                    <?php } ?>
+                    <?php } /*?>
                             <li><a><?php echo $this->lang->line('profile'); ?> <span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
-                                    <li><a href="<?php echo site_url('profile'); ?>"><?php echo $this->lang->line('my_profile'); ?></a></li>
+                                    <!--<li><a href="<?php echo site_url('profile'); ?>"><?php echo $this->lang->line('my_profile'); ?></a></li>-->
                                     <li><a href="<?php echo site_url('profile/password'); ?>"><?php echo $this->lang->line('reset_password'); ?></a></li>
                                     <?php if($this->session->userdata('role_id') == GUARDIAN){ ?>
                                         <!-- <li><a href="<?php echo site_url('guardian/invoice'); ?>"><?php echo $this->lang->line('invoice'); ?></a></li> -->
@@ -741,6 +724,7 @@
                                     <li><a href="<?php echo site_url('auth/logout'); ?>"><?php echo $this->lang->line('logout'); ?></a></li>
                                 </ul>
                             </li>  
+                            <?php */ ?>
                                       
                             <?php if(has_permission(VIEW, 'attendance', 'student') || 
                                     has_permission(VIEW, 'attendance', 'teacher') || 
@@ -750,13 +734,13 @@
                                     
                                 <li><a> <?php echo $this->lang->line('attendance'); ?> <span class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
-                                        <!-- <?php if(has_permission(VIEW, 'attendance', 'student')){ ?>                                    
+                                        <?php if(has_permission(VIEW, 'attendance', 'student')){ ?>                                    
                                             <?php if($this->session->userdata('role_id') == GUARDIAN){ ?>
                                                 <li><a href="<?php echo site_url('attendance/student/guardian'); ?>"><?php echo $this->lang->line('student'); ?> <?php echo $this->lang->line('attendance'); ?></a></li>
-                                            <?php } else{ ?>   
+                                            <?php }else{ ?>   
                                                 <li><a href="<?php echo site_url('attendance/student'); ?>"><?php echo $this->lang->line('student'); ?> <?php echo $this->lang->line('attendance'); ?></a></li>
                                             <?php } ?>   
-                                        <?php } ?> -->
+                                        <?php } ?>
                                         <?php if(has_permission(VIEW, 'attendance', 'teacher')){ ?>
                                             <li><a href="<?php echo site_url('attendance/teacher'); ?>"><?php echo $this->lang->line('teacher'); ?> <?php echo $this->lang->line('attendance'); ?></a></li>
                                         <?php } ?>
@@ -913,9 +897,9 @@
                                             <?php if(has_permission(VIEW, 'payroll', 'payment')){ ?>  
                                                 <li><a href="<?php echo site_url('payroll/history/index'); ?>"> <?php echo $this->lang->line('payment'); ?> <?php echo $this->lang->line('history'); ?></a></li>
                                             <?php } ?>
-                                            <!-- <?php if(has_permission(VIEW, 'report', 'payroll_report')){ ?>
-                                            <li><a href="<?php echo site_url('report/payroll_report'); ?>"><?php echo $this->lang->line('payroll'); ?> <?php echo $this->lang->line('report'); ?></a></li>
-                                            <?php } ?> -->
+                                            <?php if(has_permission(VIEW, 'report', 'report')){ ?>
+                                            <li><a href="<?php echo site_url('report/payroll'); ?>"><?php echo $this->lang->line('payroll'); ?> <?php echo $this->lang->line('report'); ?></a></li>
+                                            <?php } ?>
                                         </ul>
                                     </li>   
                                 <?php } ?> 
@@ -1204,7 +1188,7 @@
 
                                             <?php if(has_permission(VIEW, 'report', 'payroll_report')){ ?>
 
-                                            <li><a href="<?php echo site_url('/report/payroll_group_report'); ?>">Payroll <?php echo $this->lang->line('report'); ?> </a></li>
+                                            <li><a href="<?php echo site_url('/report/payroll_report'); ?>">Payroll <?php echo $this->lang->line('report'); ?> </a></li>
                                             <?php } ?>
 
                                             <!-- <li><a href="<?php echo site_url('report/sinvoice'); ?>"><?php echo $this->lang->line('student'); ?> <?php echo $this->lang->line('invoice'); ?> <?php echo $this->lang->line('report'); ?></a></li>  -->

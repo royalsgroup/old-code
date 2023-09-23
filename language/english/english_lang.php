@@ -54,7 +54,6 @@ $lang['subject'] = "Subject";
 $lang['syllabus'] = "Syllabus";
 $lang['guardian'] = "Guardian";
 $lang['student'] = "Student";
-$lang['present'] = "Present";
 $lang['attendance'] = "Attendance";
 $lang['assignment'] = "Assignment";
 $lang['exam'] = "Exam";
@@ -1113,4 +1112,6 @@ $lang['reciept'] = "Reciept";
 $lang['pan'] = "PAN";
 $lang['husband'] = "Husband";
 $lang['number'] = "Number";
-
+$lang['current_password'] = "Current Password";
+$lang['invalid_current_password'] = "Wrong Current Password";
+$lang['print'] = "Print";

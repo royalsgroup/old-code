@@ -32,6 +32,7 @@ class Daybook extends MY_Controller
 			else
 			{
 				$arr=explode("-",$financial_year->session_year);
+		
 				$date_exploded = explode(" ",$arr[0]);
 				if(count($date_exploded)>2)
 				{
@@ -96,8 +97,14 @@ class Daybook extends MY_Controller
 			}
 			else
 			{
+			
+
 				$transactions=$this->transactions->get_transactions_by_date($school_id,$start_date,$category,$start,$limit,$order_by, $order_dir);
+				
 				$transactions_count=$this->transactions->get_transactions_by_date_count($school_id,$start_date,$category);
+
+
+
 			}
 			error_on();
 			//echo $this->db->last_query();
@@ -190,7 +197,11 @@ class Daybook extends MY_Controller
 			$this->data['salary_payments']=$salary_payments;
 			$this->data['inventory_invoices']=$inventory_invoice_numbers;
 			$this->data['inventory_url']=$inventory_url;
-			// end				
+			
+
+			// end
+		
+				
         }
 		// debug_a($transactions,"Others");
 

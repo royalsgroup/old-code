@@ -199,13 +199,10 @@
 				messages: { syllabus: "File must be 1MB" }
 			});*/
         });
-        
-    var today = new Date();
     $('#date').datepicker({
         format: 'dd-mm-yyyy',
         daysOfWeekDisabled: [0],
-        datesDisabled: datesForDisable,
-        endDate: today
+        datesDisabled: datesForDisable
     });
 
     <?php if (isset($class_id) && isset($section_id)) { ?>

@@ -12,7 +12,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @support         : yousuf361@gmail.com	
  * @copyright       : Codetroopers Team	 	
  * ********************************************************** */
-
 class Report extends My_Controller {
 
     public $data = array();
@@ -23,9 +22,11 @@ class Report extends My_Controller {
         parent::__construct();
         
         $this->load->model('Report_Model', 'report', true);
+		
+		$this->load->model("accounting/Invoice_Model",'invoice', true);
+		
         $this->load->helper('report');
-        $this->load->model("accounting/Invoice_Model",'invoice', true);
-
+        
         if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdata('dadmin') != 1){
             $school_id = $this->session->userdata('school_id');
             $this->data['academic_years'] = $this->report->get_list('academic_years', array( 'school_id'=>$school_id));
@@ -496,12 +497,13 @@ class Report extends My_Controller {
                 $school_id = $school_obj->id;
                 $condition['school_id'] = $school_id;
                 $academic_years = $this->report->get_academic_years($school_id);
+                //echo "<pre>";print_r($academic_years);die;
                 if(!empty( $academic_years))
                 {
                     if($school_id)
                     {
-                        $this->data['current_year'] = $academic_years->curr_start;
-                        $this->data['prev_year']    = $academic_years->prev_start_year;
+                        $this->data['current_year'] = $academic_years->curr_session_year;
+                        $this->data['prev_year']    = $academic_years->prev_session_year;
                     }
                     $current_academic_year = $academic_years->id ? $academic_years->id  : 0;
                     $prev_academic_year = $academic_years->prev ? $academic_years->prev  : 0;
@@ -1513,7 +1515,7 @@ $school_id=null;
                     }
                     $current_academic_year = $academic_years->id ? $academic_years->id  : 0;
                    
-                    $students_data = $this->report->get_student_data ($school_id,$current_academic_year,null,$filter_column, null, 1);
+                    $students_data = $this->report->get_student_data ($school_id,$current_academic_year,null,$filter_column);
                   
                     $looping_class_id = 0;
                     foreach($students_data as $obj)
@@ -1763,7 +1765,7 @@ $school_id=null;
                             $this->data['current_year'] = $academic_years->curr_start."-".$academic_years->curr_end;
                         }
                         $current_academic_year = $academic_years->id ? $academic_years->id  : 0;
-                        $students_data = $this->report->get_student_data ($school_id,$current_academic_year,null,$filter_column,true, 1);
+                        $students_data = $this->report->get_student_data ($school_id,$current_academic_year,null,$filter_column,true);
                         $looping_class_id = 0;
                         foreach($students_data as $obj)
                         {                       
@@ -1824,7 +1826,6 @@ $school_id=null;
         $this->layout->view('student/class_level_report', $this->data);
     }
     public function fee_report() {
-        // error_on();
         check_permission(VIEW,1);
         $this->data['currrent_year_data'] = array();
         $this->data['previous_year_data'] = array();
@@ -1924,8 +1925,6 @@ $school_id=null;
                     $this->data['income_head_id'] = $income_head->id;
 
                     $this->data['fee_type_name'] = $income_head->title;
-                    $this->data['fee_type'] = $income_head->head_type;
-
                     $filter_column_name = "class_name";
                     $filter_column_filter_value = $school_id;
                     $filter_heading  = "Teaching Class Level";
@@ -1944,39 +1943,26 @@ $school_id=null;
                     if(!empty($section_datas))
                     {
 
-                    $aSectionFeeAmounts = array();
+                    
                     foreach($section_datas as $section_data)
                     { 
-                        $section_data->total_fee_amount = 0;
                         if ($income_head->head_type == "transport")
                         {
-                            $iStudentCount =  $section_data->member_count; 
                             $yearly_stop_fare = $section_data->yearly_stop_fare ? json_decode($section_data->yearly_stop_fare,true) : array();
                             if($academic_year_id_filter && isset($yearly_stop_fare[$academic_year_id_filter]))
-                                $iFeeAmount  = $yearly_stop_fare[$academic_year_id_filter];
-                            else
-                                $iFeeAmount = $section_data->fee_amount;
-                            $section_data->total_fee_amount =  $iFeeAmount* $iStudentCount;
-                            // $aSectionFeeAmounts[ $section_data->class_id][$section_data->section_id] = ($aSectionFeeAmounts[ $section_data->class_id][$section_data->section_id] ?? 0) + $iFeeAmount* $iStudentCount;
+                            {
+                                $section_data->fee_amount = $yearly_stop_fare[$academic_year_id_filter];
+                            }
                         }
                         if ($income_head->head_type == "hostel")
                         {
-                            $iStudentCount =  $section_data->member_count; 
                             $yearly_room_rent = $section_data->yearly_room_rent ? json_decode($section_data->yearly_room_rent,true) : array();
                             if($academic_year_id_filter && isset($yearly_room_rent[$academic_year_id_filter]))
-                                $iFeeAmount  = $yearly_room_rent[$academic_year_id_filter];
-                            else 
-                                $iFeeAmount = $section_data->fee_amount;
-    
-                            $section_data->total_fee_amount =  $iFeeAmount* $iStudentCount;
-                            // $aSectionFeeAmounts[ $section_data->class_id][$section_data->section_id] = ($aSectionFeeAmounts[ $section_data->class_id][$section_data->section_id] ?? 0) + $iFeeAmount* $iStudentCount;
+                            {
+                                $section_data->fee_amount = $yearly_room_rent[$academic_year_id_filter];
+                            }
                         }
-                        if (!isset($students_data[$section_data->class_id."".$section_data->id] ))
-                        {
-                            $students_data[$section_data->class_id."".$section_data->id] =  array( "section_id"  =>  $section_data->id , "class_id" =>  $section_data->class_id,"class_name"  =>  $section_data->class_name , "section_name" =>  $section_data->section_name, "fee_amount" =>   $section_data->fee_amount,'total_fees_amount'=>$section_data->total_fee_amount) ;
-                        }
-                        else
-                            $students_data[$section_data->class_id."".$section_data->id]['total_fees_amount'] =  $students_data[$section_data->class_id."".$section_data->id]['total_fees_amount']+ $section_data->total_fee_amount;
+                        $students_data[] =  array( "section_id"  =>  $section_data->id , "class_id" =>  $section_data->class_id,"class_name"  =>  $section_data->class_name , "section_name" =>  $section_data->section_name, "fee_amount" =>   $section_data->fee_amount) ;
                         if(!in_array($section_data->id,$section_ids))
                         {
                             $section_ids[] = $section_data->id;
@@ -1989,6 +1975,7 @@ $school_id=null;
                     }
                     $students_count_datas =  $this->report->get_section_students_count( $section_ids,$class_ids,$school_id, $academic_year_id_filter, $income_head->head_type );
                     
+                  
                     foreach($students_count_datas as $students_count_data)
                     {
                         $rte_value =  strtolower($students_count_data->rte) == "yes" ? "yes" : "no";
@@ -2094,14 +2081,31 @@ $school_id=null;
         $this->layout->view('student/tution_fee_report', $this->data);
 
     }
-    public function installment_wise_old() {
-        error_on();
 
+    public function getSectionOfClass() {
+        $class_id  = $_POST['class_id'];
+        $school_id = $this->session->userdata('school_id');
+        $sections  = $this->report->get_list('sections', array('status' => 1, 'school_id'=>$school_id, 'class_id'=>$class_id), '', '', '', 'id', 'ASC');
+
+        $html = "<option value=''>-- Select Section --</option>";
+        if($sections){
+            foreach($sections as $section) { 
+                $section_name = $section->name;
+                $section_id = $section->id;
+                $html .= "<option value='$section_id'>$section_name</option>";
+            }
+        }
+        echo $html;die;
+    }
+
+
+    public function installment_wise() {
+      
         check_permission(VIEW,1);
         $this->data['currrent_year_data'] = array();
         $this->data['previous_year_data'] = array();
         $academic_year_id_filter = $this->input->post('academic_year_id_filter');
-
+        $this->data['sections'] = array();
         if(($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdata('dadmin') == 1)) {
        
         }
@@ -2117,6 +2121,10 @@ $school_id=null;
             $this->data['school'] = $this->report->get_school_by_id($school_id);
 
             $this->data['classes'] = $this->report->get_list('classes', array('status' => 1, 'school_id'=>$school_id), '', '', '', 'id', 'ASC');
+
+            
+
+
             $school = $this->report->get_school_by_id($school_id);
             if($academic_year_id_filter) {
                 $fee_type_acdemic_year = $academic_year_id_filter;
@@ -2129,17 +2137,22 @@ $school_id=null;
 
 
         $this->data['emi_data'] =  array();
+        $this->data['section_id'] =  0;
        
         $faculties = array();
         $this->data['income_head_id']  = 0;
         if ($_POST) {
           
             $school_id = $this->input->post('school_id');
+            $section_id = $this->input->post('section_id');
             $report_type = $this->input->post('filter_type');
             $district_id = $this->input->post('district_id');
             $income_head_id = $this->input->post('income_head_id');
             $zone_id = $this->input->post('zone_id');
             $class_id = $this->input->post('class_id');
+            $this->data['section_id'] =  $section_id;
+
+            $this->data['sections'] = $this->report->get_list('sections', array('status' => 1, 'school_id'=>$school_id, 'class_id'=>$class_id), '', '', '', 'id', 'ASC');
 
             if($academic_year_id_filter) {
                 $this->data['academic_year_id'] = $academic_year_id_filter;
@@ -2190,7 +2203,7 @@ $school_id=null;
                     {
                         $fees=$this->report->get_single('fees_amount',array('income_head_id'=>$income_head_id,"class_id"=>$class_id));	
                       
-                        $students_raw =  $this->report->get_students( $school_id,$class_id ,$academic_year_id_filter,$fees->fee_amount);
+                        $students_raw =  $this->report->get_students( $school_id,$class_id ,$academic_year_id_filter,$fees->fee_amount,$section_id);
                     }
                     
                     foreach($students_raw as $student)
@@ -2266,10 +2279,30 @@ $school_id=null;
                             {
                                 $student->emi[$emi_fees_id] = isset( $students_emi_data[$student->id][$emi_fees_id])  ?  $students_emi_data[$student->id][$emi_fees_id] : 0;
                             }
+							
+							/*  add code for previous year **********/
+							 $student->due_amount = array();
+							  $academic_year = $this->report->get_single('academic_years', array('id' => $academic_year_id_filter));
+							 
+            if($academic_year->previous_academic_year_id)
+            {
+							$due_amount =  $this->__invoice_creation(array('student_id'=> $student->id,'school_id'=>$school_id,'previous_academic_year_id'=>$academic_year->previous_academic_year_id,'fee_type'=>$income_head->head_type)); 
+							
+							
+							if($due_amount)
+							{
+							
+								
+								$student->due_amount=$due_amount['due_amount'];
+								
+							}
+				}			
+							
+							/********* End of this code **********/
                             $fee_data[] = $student;
                         }
                     }
-                   
+                   //echo "<pre>";print_r($fee_data);die;
                     $this->data['fee_data']  = $fee_data;
             }
             $this->data['income_head'] =  $income_head ;
@@ -2279,226 +2312,7 @@ $school_id=null;
         $this->layout->view('student/installmentwise_report', $this->data);
 
     }
-    public function installment_wise() {
-        error_on();
-        // check_permission(VIEW,1);
-        $this->data['currrent_year_data'] = array();
-        $this->data['previous_year_data'] = array();
-        $academic_year_id_filter = $this->input->post('academic_year_id_filter');
-        $school_id = 0;
-        if(($this->session->userdata('role_id') == SUPER_ADMIN || $this->session->userdata('dadmin') == 1)) {
-       
-        }
-        else
-        {
-            $school_id = $this->session->userdata('school_id');
-            $academic_year=$this->report->get_single('academic_years',array('school_id'=>$school_id,'is_running'=>1));	
-            $this->data['academic_year_id'] = $academic_year->id;
-            
-        }
-        if( $school_id)
-        {
-            $this->data['school'] = $this->report->get_school_by_id($school_id);
-
-            $this->data['classes'] = $this->report->get_list('classes', array('status' => 1, 'school_id'=>$school_id), '', '', '', 'id', 'ASC');
-            $school = $this->report->get_school_by_id($school_id);
-            if($academic_year_id_filter) {
-                $fee_type_acdemic_year = $academic_year_id_filter;
-            } else {
-                $fee_type_acdemic_year =$school->academic_year_id;
-            }
-            $this->data['fee_types'] = $this->report->get_list('income_heads', array("school_id"=>$school_id,'academic_year_id'=> $fee_type_acdemic_year), '','', '', 'id', 'ASC');
-        }
-        $this->data['fee_data']  = array();
-
-
-        $this->data['emi_data'] =  array();
-       
-        $faculties = array();
-        $this->data['income_head_id']  = 0;
-        if ($_POST) {
-          
-            $school_id = $this->input->post('school_id');
-            $report_type = $this->input->post('filter_type');
-            $district_id = $this->input->post('district_id');
-            $hostel_id = $this->input->post('hostel_id');
-            $route_id = $this->input->post('route_id');
-
-            if ($hostel_id)
-                $extra_value = $hostel_id; 
-            else 
-                $extra_value = $route_id; 
-            $this->data['extra_value'] =  $extra_value ;
-
-            $income_head_id = $this->input->post('income_head_id');
-            $zone_id = $this->input->post('zone_id');
-            $class_id = $this->input->post('class_id');
-            if($academic_year_id_filter) 
-            {
-                $this->data['academic_year_id'] = $academic_year_id_filter;
-                $academic_year=$this->report->get_single('academic_years',array('id'=>$academic_year_id_filter));	
-                $previous_academic_year_id = $academic_year->previous_academic_year_id;
-                $this->data['previous_academic_year_id'] = $academic_year->previous_academic_year_id;
-            }
-            else 
-            {
-                $academic_year=$this->report->get_single('academic_years',array('school_id'=>$school_id,'is_running'=>1));	
-                $academic_year_id_filter = $academic_year->id;
-                $previous_academic_year_id = $academic_year->previous_academic_year_id;
-                $this->data['previous_academic_year_id'] = $academic_year->previous_academic_year_id;
-            }
-            
-            $this->data['school_id']  = $school_id;
-            $this->data['class_id'] = $class_id;
-            $this->data['academic_year_id_sel']  = $academic_year_id_filter;
-            $this->data['academic_year_id']  = $academic_year_id_filter;
-
-            $this->data['income_head_id']  = $income_head_id;
-            $fee_data = array();
-            $income_head = array();
-           if($school_id)
-           {
-                          
-                    $filter_column = "E.class_id,E.section_id";
-                    $filter_column_filter = "SC.id";
-                    $students_data = array();
-                   // $school = $this->report->get_school_by_id($school_id);
-                    $income_head=$this->report->get_single('income_heads',array('id'=>$income_head_id));	
-                    if($income_head->head_type == "transport")
-                    {
-                        $students_raw =  $this->report->get_transport_students( $school_id ,$class_id  ,$academic_year_id_filter, null, $route_id);
-                    }
-                    elseif($income_head->head_type == "hostel")
-                    {
-
-                        $students_raw =  $this->report->get_hostel_students( $school_id ,$class_id  ,$academic_year_id_filter,null, $hostel_id);
-
-                    }
-                  
-                 // Assign the value of $hostel_id to $extra_value
-       
-                    $income_head_id =  $income_head->id;
-                    $emi_fees_row = $this->report->get_list('emi_fee',array('school_id'=>$school_id,'income_heads_id'=>$income_head_id), '', '', '', 'id', 'ASC');	
-                    $this->data['emi_data'] =  $emi_fees_row ;
-                    $emi_fees_ids = [];
-                    $student_ids = [];
-                    $students_emi_data = [];
-                    $students_paid = [];
-                    $students_discount = [];
-                    foreach($emi_fees_row as $emi_fee)
-                    {
-                        $emi_fees_ids[]  =  $emi_fee->id;
-                    }
-                   
-                    if($income_head->head_type == "transport")
-                    {
-                        $students_raw =  $this->report->get_transport_students( $school_id ,$class_id  ,$academic_year_id_filter,null, $route_id);;
-                    }
-                    elseif($income_head->head_type == "hostel")
-                    {
-                        $students_raw =  $this->report->get_hostel_students( $school_id ,$class_id  ,$academic_year_id_filter,null, $hostel_id);;
-                    }
-                    else
-                    {
-                        $fees=$this->report->get_single('fees_amount',array('income_head_id'=>$income_head_id,"class_id"=>$class_id));	
-                      
-                        $students_raw =  $this->report->get_students( $school_id,$class_id ,$academic_year_id_filter,$fees->fee_amount);
-                    }
-                    
-                    foreach($students_raw as $student)
-                    {
-                        $student_ids[]  =  $student->id;
-                    }
-
-                    if(!empty($student_ids))
-                    {
-
-                        $students_paid_datas =  $this->report->get_paid_students_installment_data( $student_ids,$school_id,$class_id,$income_head_id, $academic_year_id_filter);
-                       
-                        foreach($students_paid_datas as $students_paid_data)
-                        {
-                            if(!isset($students_emi_data[$students_paid_data->student_id][$students_paid_data->academic_year_id][$students_paid_data->emi_type]))
-                            {
-                                $paid_amount = 0;
-                            }
-                            else
-                            {
-                                $paid_amount = $students_emi_data[$students_paid_data->student_id][$students_paid_data->academic_year_id][$students_paid_data->emi_type];
-                            }
-                            if(!isset($students_discount[$students_paid_data->student_id][$students_paid_data->academic_year_id]))
-                            {
-                                $discount_amount = 0;
-                            }
-                            else
-                            {
-                                $discount_amount  = $students_discount[$students_paid_data->student_id][$students_paid_data->academic_year_id];
-                            }
-                            if(!isset($students_paid[$students_paid_data->student_id][$students_paid_data->academic_year_id]))
-                            {
-                                $net_amount = 0;
-                            }
-                            else
-                            {
-                                $net_amount  = $students_paid[$students_paid_data->student_id][$students_paid_data->academic_year_id];
-                            }
-                          
-                            $discount_amount =  $discount_amount+ $students_paid_data->discount;
-
-                            $paid_amount =  $paid_amount+ $students_paid_data->net_amount;
-                            $net_amount =  $net_amount+ $students_paid_data->net_amount;
-                            $students_emi_data[$students_paid_data->student_id][$students_paid_data->academic_year_id][$students_paid_data->emi_type] =  $paid_amount;
-                            $students_paid[$students_paid_data->student_id][$students_paid_data->academic_year_id] = $net_amount;
-                            $students_discount[$students_paid_data->student_id][$students_paid_data->academic_year_id] =  $discount_amount ;
-                        }
-                        //debug_a($students_paid);
-
-                   
-                        foreach( $students_raw as $student)
-                        {
-                            if ($income_head->head_type == "transport")
-                            {
-                                $yearly_stop_fare = $student->yearly_fee_amount ? json_decode($student->yearly_fee_amount,true) : array();
-                                if($academic_year_id_filter && isset($yearly_fee_amount[$academic_year_id_filter]))
-                                {
-                                    $student->fee_amount = $yearly_fee_amount[$academic_year_id_filter];
-                                }
-                            }
-                            if ($income_head->head_type == "hostel")
-                            {
-                                $yearly_room_rent = $student->yearly_room_rent ? json_decode($student->yearly_room_rent,true) : array();
-                                if($academic_year_id_filter && isset($yearly_room_rent[$academic_year_id_filter]))
-                                {
-                                    $student->fee_amount = $yearly_room_rent[$academic_year_id_filter];
-                                }
-                            }
-                            $student->total_paid =  isset($students_paid[$student->id][$student->academic_year_id]) ? $students_paid[$student->id][$student->academic_year_id] : 0;
-                            $student->total_discount =  isset($students_discount[$student->id][$student->academic_year_id]) ? $students_discount[$student->id][$student->academic_year_id] : 0;
-                            $student->emi = array();
-                            foreach($emi_fees_ids as $emi_fees_id)
-                            {
-                                $student->emi[$emi_fees_id] = isset( $students_emi_data[$student->id][$emi_fees_id])  ?  $students_emi_data[$student->id][$emi_fees_id] : 0;
-                            }
-                            $student->due_amount = 0;
-                            if ($academic_year->previous_academic_year_id)
-                            {
-                                $due_amount =  $this->__invoice_creation(array('student_id'=> $student->id,'school_id'=>$school_id,'previous_academic_year_id'=>$academic_year->previous_academic_year_id,'fee_type'=>$income_head->head_type)); 
-                                if ($due_amount)
-                                    $student->due_amount = $due_amount['due_amount'];
-                                
-                            }		
-                            $fee_data[$student->id][$student->academic_year_id] = $student;
-                        }
-                    }
-                    
-                    $this->data['fee_data']  = $fee_data;
-            }
-            $this->data['income_head'] =  $income_head ;
-        }            
-        $this->layout->title( 'installment wise Report | ' . SMS);   
-
-        $this->layout->view('student/installment_dev', $this->data);
-
-    }
+    
     public function payroll_report() {
         check_permission(VIEW,1);
         error_on();
@@ -2825,7 +2639,7 @@ $school_id=null;
                     {
                         $student_data[$zone_id][$category] =  array("girls"=>0,"boys"=>0);
                         $counts_data =  $this->report->get_caste_student_count($category,"SC.zone_id",$zone_id);
-                        
+
                        foreach($counts_data as $student_count)
                        {
                             if($student_count->gender == "male" || $student_count->gender == "boy")
@@ -2889,17 +2703,16 @@ $school_id=null;
                     }
                     $current_academic_year = $academic_years->id ? $academic_years->id  : 0;
                     $students_data = $this->report->get_student_data ($school_id,$current_academic_year,null,$filter_column,true, 1);
-                    // echo $this->db->last_query();
                     $looping_class_id = 0;
                     foreach($students_data as $obj)
                     {                       
                         $filter_id = $obj->$filter_column;
                         $class_id  = $obj->class_id;
-                        $category  = $obj->caste ? strtoupper(trim($obj->caste)) : " Not Assigned";
-                        // if(!$category)
-                        // {
-                        //     continue;
-                        // }
+                        $category  = $obj->caste ? strtoupper(trim($obj->caste)) : "";
+                        if(!$category)
+                        {
+                            continue;
+                        }
                         if(!in_array($category,$categories)) $categories[] = $category;
                         if(!isset($student_data[$filter_id]))
                         {
@@ -3728,7 +3541,7 @@ $school_id=null;
        
 
     }
-      /*****************Function __invoice_creation**********************************
+	  /*****************Function __invoice_creation**********************************
     * @type            : Function
     * @function name   : __invoice_creation
     * @description     : Invoice creation for student                  

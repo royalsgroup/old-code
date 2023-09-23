@@ -399,7 +399,8 @@ exit;
         $this->data['school_id'] = $school_id;
         $this->data['filter_school_id'] = $school_id;
         $this->data['schools'] = $this->schools;
-
+        $this->data['todayDate'] = date("d-m-Y");
+        
         $this->data['single'] = TRUE;
         $this->layout->title($this->lang->line('create') . ' ' . $this->lang->line('donation') . ' | ' . SMS);
         $this->layout->view('donation/index', $this->data);

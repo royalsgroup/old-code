@@ -595,6 +595,6 @@ $('#datatable-responsive thead tr:eq(1) th').each( function (i) {
             });
 
          })	
-		 
+		
 
 </script>

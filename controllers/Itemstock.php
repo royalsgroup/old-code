@@ -18,6 +18,7 @@ class Itemstock extends MY_Controller
      public function index($school_id = null) {
        
         //check_permission(VIEW);
+		$this->data['itemstocks'] = $this->itemstock->get(null,$school_id);
 		if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdata('dadmin') != 1){  
 			$school_id=$this->session->userdata('school_id');                    
             $condition['school_id'] = $school_id;                    
@@ -54,10 +55,6 @@ class Itemstock extends MY_Controller
                 $f_end=date("Y-m-d",strtotime("31 ".$arr[1]));	
             }
         }
-		$financial_start_date = $f_start;
-		$financial_end_date = $f_end;
-		$this->data['itemstocks'] = $this->itemstock->get(null,$school_id, null,$financial_start_date, $financial_end_date);
-
 		$f_start=date('d/m/Y',strtotime($f_start));
 		if ($check_financial_year)
         {
@@ -71,6 +68,9 @@ class Itemstock extends MY_Controller
         $this->data['themes'] = $this->itemstock->get_list('themes', array(), '','', '', 'id', 'ASC');		
         $this->data['list'] = TRUE;
         $this->layout->title($this->lang->line('manage_item')." ".$this->lang->line('stock') . ' | ' . SMS);
+
+        $this->data['todayDate'] = date("d-m-Y");
+        
         $this->layout->view('itemstock/index', $this->data);            
        
     }
@@ -198,8 +198,7 @@ class Itemstock extends MY_Controller
 			$edited_ledger_ids = [];
 
             $this->_prepare_itemstock_validation();
-			$school_id=$this->input->post('school_id');   
-			$stock_adjustment =$this->input->post('stock_adjustment');       
+			$school_id=$this->input->post('school_id');       
 			if($school_id)
 			{
 				$this->data['items'] = $this->item->getItemBySchool($school_id);  
@@ -207,22 +206,18 @@ class Itemstock extends MY_Controller
 		
             if ($this->form_validation->run() === TRUE && !empty($_POST['item_id'])) {
 				$school=$this->itemstock->get_single('schools', array('id' => $_POST['school_id']));
-				if($school->default_voucher_Id_for_inventory > 0 || $stock_adjustment){	
+				if($school->default_voucher_Id_for_inventory > 0){	
 					$invoice_data = $this->_get_posted_invoice_data();		
 
-
+					
 				   // echo "<pre>";
 					// print_r($data); echo "<pre>";
-					if (!$stock_adjustment)
-						$invoice_insert_id = $this->itemstock->insert('item_invoices', $invoice_data);
+					$invoice_insert_id = $this->itemstock->insert('item_invoices', $invoice_data);
 					$data = $this->_get_posted_itemstock_data();
 
 				   
-					if($invoice_insert_id || $stock_adjustment)
+					if($invoice_insert_id)
 					{			
-						if($invoice_insert_id)
-						{
-								$transaction_id = 0;
 								$voucher_id=$school->default_voucher_Id_for_inventory;
 								//$item_data=$this->itemstock->get_single('item', array('id' => $data['item_id']));
 								if($invoice_data['debit_ledger_id']>0 && $invoice_data['credit_ledger_id']>0){
@@ -239,7 +234,7 @@ class Itemstock extends MY_Controller
 									$transaction['created']=date('Y-m-d H:i:s');	
 									$transaction['financial_year_id']=$school->financial_year_id;
 									$transaction['created_by']=$this->session->userdata('id');		   
-									$transaction['narration']= "Purchase Items - ".$data['note'];		   
+									$transaction['narration']= "Purchase Items - ".$invoice_data['description'];		   
 									$transaction['inventory_id']=$invoice_insert_id;
 
 									
@@ -275,11 +270,9 @@ class Itemstock extends MY_Controller
 									$updated = $this->itemstock->update('item_invoices', array("account_transaction_id"=>$transaction_id), array('id' => $invoice_insert_id));
 
 								}
-							}
-
-						if($transaction_id || $stock_adjustment)
+									
+						if($transaction_id)
 						{
-
 							foreach($data['item_id'] as $key => $value){
 								$data1 = $data;
 								$data1['item_id'] = $value;
@@ -289,9 +282,11 @@ class Itemstock extends MY_Controller
 
 								$data1['invoice_id'] = $invoice_insert_id ;
 								$data1['account_transaction_id'] = $transaction_id;
+							
+							
 	
 								$insert_id = $this->itemstock->insert('item_stock', $data1);
-
+								
 								if ($insert_id) {
 									if (isset($_FILES["item_photo"]) && !empty($_FILES['item_photo']['name'])) 
 									{
@@ -308,11 +303,9 @@ class Itemstock extends MY_Controller
 										}
 										$data_img = array('id' => $insert_id, 'attachment' => $destination . $img_name);
 										//$this->itemstock->add($data_img);
-										
-
 										$updated = $this->itemstock->update('item_stock', $data_img, array('id' => $insert_id));
 									}
-									$updated = $this->itemstock->update('item', array("last_purchase_value"=>$data1['purchase_price'], 'mrp'=>$data1['mrp']), array('id' =>  $value));
+									
 									
 								} else {
 									error($this->lang->line('insert_failed'));
@@ -324,8 +317,6 @@ class Itemstock extends MY_Controller
 						{
 							update_ledger_opening_balance($edited_ledger_ids,$data['school_id']);
 						}
-						// echo "end";
-						// die();
 							success($this->lang->line('insert_success'));
 							redirect('itemstock');
 					}
@@ -506,10 +497,6 @@ class Itemstock extends MY_Controller
 		$items[] = 'description'; 		
         $data = elements($items, $_POST);
 		$data['quantity']=$_POST['quantity'];
-		// $school = $this->itemstock->get_school_by_id($data['school_id']);
-
-		// $data['financial_year_id'] = @$school->financial_year_id;
-
 		if(isset($_POST['date']) && $_POST['date']!=''){
 			$_POST['date'] = str_replace('/', '-', $_POST['date']);
 

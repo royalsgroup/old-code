@@ -10,8 +10,8 @@
             </div>
              <div class="x_content quick-link">
                  <span><?php echo $this->lang->line('quick_link'); ?>:</span>                
-                 <a href="<?php echo site_url('profile'); ?>"><?php echo $this->lang->line('my_profile'); ?></a>
-                | <a href="<?php echo site_url('profile/password'); ?>"><?php echo $this->lang->line('reset_password'); ?></a>
+                <!-- <a href="<?php echo site_url('profile'); ?>"><?php echo $this->lang->line('my_profile'); ?></a>
+                |--> <a href="<?php echo site_url('profile/password'); ?>"><?php echo $this->lang->line('reset_password'); ?></a>
                 
                 <?php if($this->session->userdata('role_id') == GUARDIAN){ ?>
                     | <a href="<?php echo site_url('guardian/invoice'); ?>"><?php echo $this->lang->line('invoice'); ?></a>

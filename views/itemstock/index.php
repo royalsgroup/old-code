@@ -80,8 +80,8 @@ if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdat
 
                                         <th><?php echo $this->lang->line('invoice_number'); ?></th>
                                         <th><?php echo $this->lang->line('supplier'); ?></th>
-                                        <th><?php echo $this->lang->line('debit_ledger'); ?></th>
-                                        <th><?php echo $this->lang->line('credit_ledger'); ?></th>  
+                                        <!-- <th><?php echo $this->lang->line('debit_ledger'); ?></th>
+                                        <th><?php echo $this->lang->line('credit_ledger'); ?></th>   -->
                                         <th><?php echo $this->lang->line('store'); ?></th>
                                         <th><?php echo $this->lang->line('item')." ".$this->lang->line('name'); ?></th>  
                                         <th><?php echo $this->lang->line('item_code'); ?></th>  
@@ -116,8 +116,8 @@ if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdat
                                             <td><?php echo date('d-M-Y',strtotime($obj['date'])); ?></td>
                                             <td><?php echo $obj['invoice_no'] ?></td>
                                             <td><?php echo $obj['item_supplier']; ?></td>
-                                            <td><?php echo $obj['debit_ledger']; ?></td>
-                                            <td><?php echo $obj['credit_ledger']; ?></td>
+                                            <!-- <td><?php echo $obj['debit_ledger']; ?></td>
+                                            <td><?php echo $obj['credit_ledger']; ?></td> -->
                                             <td><?php echo $obj['item_store']; ?></td>
 
                                             <td><?php echo $obj['name']; ?></td>
@@ -152,7 +152,15 @@ if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdat
                                         <?php } ?>
                                     <?php } ?>
                                 </tbody>
-                              
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="<?php echo $total_colspan ?>" style="text-align:right">Total:</th>
+                                       
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
                             </table>                                
                             </div>
                         </div>
@@ -167,18 +175,10 @@ if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdat
                                     <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name"><?php echo $this->lang->line('date'); ?> 
                                     </label>
                                     <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <input type="text" class="form-control date col-md-7 col-xs-12" id="date" name="date" autocomplete="off">										     
+                                        <input type="text" class="form-control  col-md-7 col-xs-12" id="date" name="date" autocomplete="off" value="<?php echo $todayDate?>" readonly>										     
                                         <div class="help-block"><?php echo form_error('date'); ?></div>
                                     </div>
                             </div>  
-                            <div class="item form-group">
-									<label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Item Update
-                                    </label> 
-									<div class="col-md-6 col-sm-6 col-xs-12">									
-                                        <input type="checkbox" name="stock_adjustment" id="stock_adjustment" value="1">										     
-			
-									</div>									
-									</div>		
                               <!-- <div class="item form-group">                        
                                     
                                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name"><?php echo $this->lang->line('category'); ?> <span class="required">*</span></label>
@@ -238,21 +238,21 @@ if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdat
                                             <div class="help-block"><?php echo form_error('supplier_id'); ?></div> 
                                         </div>
                                     </div>
-                                    <div class="item form-group accountfields">
-									<label class="control-label col-md-3 col-sm-3 col-xs-12" for="name"><?php echo $this->lang->line('voucher'); ?> 
+                                    <div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-12" for="name"><?php echo $this->lang->line('voucher'); ?> <span class="required">*</span>
                                     </label> 
 									<div class="col-md-6 col-sm-6 col-xs-12">									
-                                        <select  class="form-control col-md-7 col-xs-12" name="voucher_id" id="voucher_id" >
+                                        <select  class="form-control col-md-7 col-xs-12" name="voucher_id" id="voucher_id" required="required">
                                             <option value="">--<?php echo $this->lang->line('select'); ?>--</option>
 											
 										</select>									
 									</div>									
 									</div>			                                                                  
-                                    <div class="item form-group accountfields">
-									<label class="control-label col-md-3 col-sm-3 col-xs-12" for="name"><?php echo $this->lang->line('debit_ledger'); ?> 
+                                    <div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-12" for="name"><?php echo $this->lang->line('debit_ledger'); ?> <span class="required">*</span>
                                     </label> 
 									<div class="col-md-6 col-sm-6 col-xs-12">									
-                                        <select  class="form-control col-md-7 col-xs-12" name="debit_ledger_id" id="add_debit_ledger_id" >
+                                        <select  class="form-control col-md-7 col-xs-12" name="debit_ledger_id" id="add_debit_ledger_id" required="required">
                                             <option value="">--<?php echo $this->lang->line('select'); ?>--</option>
 											<?php
 											foreach($account_ledgers as $ledger){ ?>
@@ -261,11 +261,11 @@ if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdat
 										</select>									
 									</div>									
 									</div>									
-                                    <div class="item form-group accountfields">
-									<label class="control-label col-md-3 col-sm-3 col-xs-12" for="name"><?php echo $this->lang->line('credit_ledger'); ?> 
+                                    <div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-12" for="name"><?php echo $this->lang->line('credit_ledger'); ?> <span class="required">*</span>
                                     </label>	
 									<div class="col-md-6 col-sm-6 col-xs-12">										
-                                        <select  class="form-control col-md-7 col-xs-12" name="credit_ledger_id" id="add_credit_ledger_id" >
+                                        <select  class="form-control col-md-7 col-xs-12" name="credit_ledger_id" id="add_credit_ledger_id" required="required">
                                             <option value="">--<?php echo $this->lang->line('select'); ?>--</option>
 											<?php
 											foreach($account_ledgers as $ledger){ ?>
@@ -359,7 +359,7 @@ if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdat
                        
                                         </div>
                                 </div>    
-                                <div class="item form-group accountfields">
+                                <div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Packing <?php echo $this->lang->line('credit_ledger'); ?> 
                                     </label>	
 									<div class="col-md-6 col-sm-6 col-xs-12">										
@@ -599,16 +599,7 @@ if($this->session->userdata('role_id') != SUPER_ADMIN && $this->session->userdat
 var __total_col = <?php echo $total_col ?>;
     $(document).ready(function() {
   
-        $('#stock_adjustment').change(function(){
-            if ($(this).is(':checked'))
-            {
-                $('.accountfields').hide();
-            }
-            else
-            {
-                $('.accountfields').show();
-            }
-        })
+
 		 <?php 
 		if(isset($_POST['item_id']))
 		{
@@ -679,15 +670,8 @@ var __total_col = <?php echo $total_col ?>;
                   'excelHtml5',
                   'csvHtml5',
                   'pdfHtml5',
-                  'pageLength',
-                  'colvis'
+                  'pageLength'
               ],
-              "columnDefs": [
-                    {
-						"targets": [4,5,6] ,
-                        "visible": false,
-					}
-            ],
               search: true,              
               responsive: true,
               "footerCallback": function ( row, data, start, end, display ) {
@@ -747,7 +731,7 @@ var __total_col = <?php echo $total_col ?>;
                 url: base_url + "item/getAvailQuantity",
                 data: {'item_id': item_id},
                 dataType: "json",
-                async  : true,
+                async  : false,
                 success: function (data) {
                     if(data.available >0)
                     {
@@ -909,7 +893,7 @@ var __total_col = <?php echo $total_col ?>;
                     url: base_url + "itemstock/getItemunit",
                     data: {'id': item_id},
                     dataType: "json",
-                    async  : true,
+                    async  : false,
                     success: function (data) {
                        $('#item_unit_'+div_id).html(data.unit); 
                     }
@@ -926,7 +910,7 @@ var __total_col = <?php echo $total_col ?>;
                 url: base_url + "item/getAvailQuantity",
                 data: {'item_id': item_id},
                 dataType: "json",
-                async  : true,
+                async  : false,
                 success: function (data) {
 
                     $('#item_available_quantity_'+div_id).html(data.available);
@@ -965,7 +949,7 @@ var __total_col = <?php echo $total_col ?>;
             type   : "POST",
             url    : "<?php echo site_url('ajax/get_itemcategory_by_school'); ?>",
             data   : { school_id:school_id, category_id:category_id},               
-            async  : true,
+            async  : false,
             success: function(response){                                                   
                if(response)
                {  
@@ -981,7 +965,7 @@ var __total_col = <?php echo $total_col ?>;
             type   : "POST",
             url    : "<?php echo site_url('ajax/get_itemsupplier_by_school'); ?>",
             data   : { school_id:school_id, supplier_id:supplier_id},               
-            async  : true,
+            async  : false,
             success: function(response){                                                   
                if(response)
                {  
@@ -997,7 +981,7 @@ var __total_col = <?php echo $total_col ?>;
             type   : "POST",
             url    : "<?php echo site_url('ajax/get_itemstore_by_school'); ?>",
             data   : { school_id:school_id, store_id:store_id},               
-            async  : true,
+            async  : false,
             success: function(response){                                                   
                if(response)
                {  
@@ -1015,7 +999,7 @@ var __total_col = <?php echo $total_col ?>;
             data: {
                 school_id: school_id,
             },
-            async: true,
+            async: false,
             success: function(response) {
                 if (response) {
                         $('#voucher_id').html(response);
@@ -1026,7 +1010,7 @@ var __total_col = <?php echo $total_col ?>;
             type   : "POST",
             url    : "<?php echo site_url('ajax/get_accountledger_by_school'); ?>",
             data   : { school_id:school_id, ledger_id:credit_ledger_id},               
-            async  : true,
+            async  : false,
             success: function(response){                                                   
                if(response)
                {  
@@ -1058,7 +1042,7 @@ var __total_col = <?php echo $total_col ?>;
                     url:  '<?php echo site_url("itemstock/getItemBySchool"); ?>',
                     data: {'school_id': school_id},
                     dataType: "json",
-                    async  : true,
+                    async  : false,
                     success: function (data) {
                         $.each(data, function (i, obj)
                         {

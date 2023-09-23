@@ -16,7 +16,7 @@
             <th><?php echo $this->lang->line('image'); ?></th>
             <td>
                 <?php if($news->image){ ?>
-                <img src="<?php echo UPLOAD_PATH; ?>/news/<?php echo $news->image; ?>" alt="" style="width:100%"/><br/><br/>
+                <img src="<?php echo UPLOAD_PATH; ?>/news/<?php echo $news->image; ?>" alt="" /><br/><br/>
                 <?php } ?>
             </td>
         </tr>        
